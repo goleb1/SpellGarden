@@ -1,15 +1,67 @@
-# Ansh & Riley Full-Stack Template
+# SpellGarden 🌸
 
-This is a full-stack template project for Software Composers to create  applications with AI.
+A word puzzle game inspired by the NYT Spelling Bee, with a garden theme. Create words using the given letters, with the center letter being required in every word.
 
-## Getting started
-To create a new project, you go to `/paths`, choose from our list of Paths, and then use Cursor's Composer feature to quickly scaffold your project!
+## Features
 
-You can also edit the Path's prompt template to be whatever you like!
+- Beautiful garden-themed interface with hexagonal letter grid
+- Smooth animations and transitions
+- Score tracking and pangram detection
+- Keyboard and mouse input support
+- Word validation against dictionary
+- Mobile-responsive design
 
-## Technologies used
-This doesn't really matter, but is useful for the AI to understand more about this project. We are using the following technologies
-- React with Next.js 14 App Router
-- TailwindCSS
-- Firebase Auth, Storage, and Database
-- Multiple AI endpoints including OpenAI, Anthropic, and Replicate using Vercel's AI SDK
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/spellgarden.git
+cd spellgarden
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Game Rules
+
+- Words must:
+  - Be at least 4 letters long
+  - Include the center letter
+  - Only use the provided letters
+  - Be valid English words
+- Letters can be reused within a word
+- Scoring:
+  - 4-letter words = 1 point
+  - 5-letter words = 5 points
+  - 6+ letter words = 1 point per letter
+  - Pangrams (words using all 7 letters) get 7 bonus points
+
+## Tech Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 

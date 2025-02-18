@@ -1,9 +1,5 @@
-import { auth, db, storage } from "./firebase";
-import {
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { db } from "./firebase";
+import { getAuth, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import {
   collection,
   addDoc,
@@ -12,7 +8,10 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+const auth = getAuth();
+const storage = getStorage();
 
 // Auth functions
 export const logoutUser = () => signOut(auth);
