@@ -10,6 +10,7 @@ interface GameState {
   validWords: string[]; // All valid words for the puzzle
   pangrams: string[]; // All pangrams for the puzzle
   id: string; // Puzzle ID
+  bingoIsPossible: boolean; // Whether a bingo is possible in this puzzle
 }
 
 export const calculateWordScore = (word: string): number => {
@@ -135,6 +136,7 @@ export const getInitialGameState = (): GameState => {
     totalPossibleScore: puzzle.total_score,
     validWords: puzzle.valid_words,
     pangrams: puzzle.pangrams,
-    id: puzzle.id
+    id: puzzle.id,
+    bingoIsPossible: puzzle.bingo_possible
   };
 }; 

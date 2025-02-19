@@ -7,12 +7,16 @@ interface LetterGridProps {
   centerLetter: string;
   outerLetters: string[];
   onLetterClick: (letter: string) => void;
+  bingoIsPossible: boolean;
+  foundWords: string[];
 }
 
 export default function LetterGrid({ 
   centerLetter, 
   outerLetters, 
-  onLetterClick 
+  onLetterClick,
+  bingoIsPossible,
+  foundWords
 }: LetterGridProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -26,18 +30,36 @@ export default function LetterGrid({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Calculate which letters have been found as starting letters
+  const foundStartingLetters = new Set(
+    foundWords.map(word => word[0].toLowerCase())
+  );
+
   // Calculate sizes based on screen size
   const radius = isMobile ? 88 : 82; // Tighter spacing on desktop
+
+  // Helper function to determine tile background color
+  const getTileBackground = (letter: string, isCenter: boolean) => {
+    if (!bingoIsPossible) {
+      return isCenter ? 'bg-amber-100 hover:bg-amber-200' : 'bg-purple-200 hover:bg-purple-300';
+    }
+    
+    const isFound = foundStartingLetters.has(letter.toLowerCase());
+    if (isCenter) {
+      return isFound ? 'bg-amber-300 hover:bg-amber-400' : 'bg-amber-100 hover:bg-amber-200';
+    }
+    return isFound ? 'bg-purple-400 hover:bg-purple-500' : 'bg-purple-200 hover:bg-purple-300';
+  };
 
   return (
     <div className="relative w-full h-full">
       {/* Center hexagon */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <motion.button
-          className="w-[80px] h-[92px] sm:w-[70px] sm:h-[80px] bg-amber-100 hover:bg-amber-200
+          className={`w-[80px] h-[92px] sm:w-[70px] sm:h-[80px] 
                      [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                      cursor-pointer flex items-center justify-center
-                     transition-colors"
+                     transition-colors ${getTileBackground(centerLetter, true)}`}
           onClick={() => onLetterClick(centerLetter)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -66,10 +88,10 @@ export default function LetterGrid({
           >
             <motion.button
               layoutId={`outer-letter-${letter}`}
-              className="w-[80px] h-[92px] sm:w-[70px] sm:h-[80px] bg-purple-200 hover:bg-purple-300
+              className={`w-[80px] h-[92px] sm:w-[70px] sm:h-[80px]
                        [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                        cursor-pointer flex items-center justify-center
-                       transition-colors"
+                       transition-colors ${getTileBackground(letter, false)}`}
               onClick={() => onLetterClick(letter)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

@@ -10,8 +10,26 @@ interface Puzzle {
   valid_words: string[];
 }
 
+// For development/testing purposes
+let overridePuzzleIndex: number | null = null;
+
+export const setTestPuzzleIndex = (index: number) => {
+  if (process.env.NODE_ENV === 'development') {
+    overridePuzzleIndex = index;
+    // Clear local storage to prevent conflicts
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('gameState');
+    }
+  }
+};
+
 // Function to get a deterministic index based on the date
 const getDailyPuzzleIndex = (date: Date): number => {
+  // If we have an override index for testing, use that instead
+  if (process.env.NODE_ENV === 'development' && overridePuzzleIndex !== null) {
+    return overridePuzzleIndex;
+  }
+
   // Get days since epoch (January 1, 1970)
   const daysSinceEpoch = Math.floor(date.getTime() / (1000 * 60 * 60 * 24));
   

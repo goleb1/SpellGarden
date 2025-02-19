@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LetterGrid from '@/components/LetterGrid';
 import LevelIndicator from '@/components/LevelIndicator';
+import PuzzleInfo from '@/components/PuzzleInfo';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
-import { getNextPuzzleTime } from '@/lib/puzzleManager';
+import { getNextPuzzleTime, setTestPuzzleIndex } from '@/lib/puzzleManager';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
 
@@ -166,34 +167,60 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState.centerLetter, gameState.letters, currentWord, isSubmitting]);
 
+  const switchToBingoPuzzle = () => {
+    // Use the first puzzle in the set which we know has a bingo
+    setTestPuzzleIndex(0);
+    // Reset game state with new puzzle
+    setGameState(getInitialGameState());
+  };
+
   return (
     <main className="min-h-screen p-4 bg-black text-white flex flex-col h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8">
         <div className="flex items-center mb-2 sm:mb-0">
           <h1 className="text-2xl font-bold">SpellGarden</h1>
-          <span className="ml-2">🌸</span>
+          <div className="ml-2">
+            <PuzzleInfo 
+              bingoIsPossible={gameState.bingoIsPossible}
+              pangramCount={gameState.pangrams.length}
+              foundPangrams={gameState.foundWords.filter(word => gameState.pangrams.includes(word))}
+              foundWords={gameState.foundWords}
+              centerLetter={gameState.centerLetter}
+              outerLetters={gameState.letters}
+            />
+          </div>
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={switchToBingoPuzzle}
+              className="ml-4 px-2 py-1 text-xs bg-purple-500/20 border border-purple-500/30 rounded hover:bg-purple-500/30 text-purple-300"
+            >
+              Test Bingo
+            </button>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-          <div className="hidden sm:block text-sm text-gray-400">
+          <div className="hidden sm:block text-sm text-gray-400 whitespace-nowrap">
             Next puzzle in: {timeToNextPuzzle}
           </div>
           <LevelIndicator 
             score={gameState.score} 
             totalPossibleScore={gameState.totalPossibleScore} 
           />
-          <div className="text-3xl sm:text-4xl font-bold">{gameState.score}</div>
+          <div className="w-12 text-right text-3xl sm:text-4xl font-bold tabular-nums">
+            {gameState.score}
+          </div>
         </div>
       </div>
 
       {/* Game Container */}
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0">
         {/* Word Input with Message Container */}
-        <div className="relative">
+        <div className="relative mb-2 sm:mb-4">
           <input
             type="text"
             value={currentWord}
-            className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-2"
+            className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-2 sm:mb-4"
             placeholder="Type or click letters"
             readOnly
           />
@@ -224,32 +251,34 @@ export default function Home() {
               centerLetter={gameState.centerLetter}
               outerLetters={gameState.letters}
               onLetterClick={handleLetterClick}
+              bingoIsPossible={gameState.bingoIsPossible}
+              foundWords={gameState.foundWords}
             />
           </div>
         </div>
 
         {/* Control Buttons */}
-        <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-4 mb-2">
+        <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-6 mb-2 sm:mb-6">
           <button 
-            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
+            className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleDelete}
           >
             Delete
           </button>
           <button 
-            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
+            className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleShuffle}
           >
             Shuffle
           </button>
           <button 
-            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
+            className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleSort}
           >
             Sort {getSortEmoji(sortMode)}
           </button>
           <button 
-            className={`px-2 sm:px-6 py-1.5 sm:py-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap ${
+            className={`px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap ${
               currentWord.length < 4 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={handleSubmit}
@@ -260,11 +289,11 @@ export default function Home() {
         </div>
 
         {/* Found Words */}
-        <div className="pt-2 border-t border-white/20">
-          <div className="flex-1 min-h-0 overflow-y-auto max-h-[25vh]">
+        <div className="pt-2 sm:pt-6 border-t border-white/20">
+          <div className="flex-1 min-h-0 overflow-y-auto max-h-[25vh] sm:max-h-[30vh]">
             <motion.div 
               layout
-              className="flex flex-wrap gap-2 justify-center"
+              className="flex flex-wrap gap-2 sm:gap-3 justify-center p-1 sm:p-4"
             >
               {getSortedWords().map((word) => (
                 <motion.div
