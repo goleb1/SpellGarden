@@ -262,18 +262,25 @@ export default function Home() {
         {/* Found Words */}
         <div className="pt-2 border-t border-white/20">
           <div className="flex-1 min-h-0 overflow-y-auto max-h-[25vh]">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {getSortedWords().map((word, index) => (
+            <motion.div 
+              layout
+              className="flex flex-wrap gap-2 justify-center"
+            >
+              {getSortedWords().map((word) => (
                 <motion.div
-                  key={word + index}
+                  layout
+                  key={word}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
+                  }}
                   className="px-3 py-1 bg-white/10 text-white/90 rounded-full uppercase"
                 >
                   {word.toUpperCase()}
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

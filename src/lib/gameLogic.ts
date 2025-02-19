@@ -109,7 +109,7 @@ export const submitWord = async (
   
   // Check if it's a pangram
   const isPangram = gameState.pangrams.includes(word);
-  const pangramBonus = isPangram ? 7 : 0;
+  const pangramBonus = isPangram ? 10 : 0;
   const totalScore = wordScore + pangramBonus;
 
   return {
