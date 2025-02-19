@@ -167,109 +167,113 @@ export default function Home() {
   }, [gameState.centerLetter, gameState.letters, currentWord, isSubmitting]);
 
   return (
-    <main className="min-h-screen p-4 bg-black text-white">
+    <main className="min-h-screen p-4 bg-black text-white flex flex-col h-screen">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8">
+        <div className="flex items-center mb-2 sm:mb-0">
           <h1 className="text-2xl font-bold">SpellGarden</h1>
           <span className="ml-2">🌸</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-400">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+          <div className="hidden sm:block text-sm text-gray-400">
             Next puzzle in: {timeToNextPuzzle}
           </div>
           <LevelIndicator 
             score={gameState.score} 
             totalPossibleScore={gameState.totalPossibleScore} 
           />
-          <div className="text-4xl font-bold">{gameState.score}</div>
+          <div className="text-3xl sm:text-4xl font-bold">{gameState.score}</div>
         </div>
       </div>
 
       {/* Game Container */}
-      <div className="max-w-2xl mx-auto">
-        {/* Message Display */}
-        <div className="h-8 relative mb-4">
-          <AnimatePresence>
-            {message && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className={`absolute w-full text-center text-lg font-semibold ${
-                  message.type === 'error' ? 'text-red-400' : 'text-green-400'
-                }`}
-              >
-                {message.text}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Word Input */}
-        <div className="mb-8">
+      <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0">
+        {/* Word Input with Message Container */}
+        <div className="relative">
           <input
             type="text"
             value={currentWord}
-            className="w-full p-4 text-center text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg"
+            className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-2"
             placeholder="Type or click letters"
             readOnly
           />
+          
+          {/* Absolutely positioned message */}
+          <div className="absolute left-0 right-0 top-full">
+            <AnimatePresence>
+              {message && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className={`text-center text-lg font-semibold ${
+                    message.type === 'error' ? 'text-red-400' : 'text-green-400'
+                  }`}
+                >
+                  {message.text}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Letter Grid */}
-        <div className="mb-8">
-          <LetterGrid
-            centerLetter={gameState.centerLetter}
-            outerLetters={gameState.letters}
-            onLetterClick={handleLetterClick}
-          />
+        {/* Letter Grid Container with Fixed Aspect Ratio */}
+        <div className="mb-2 flex justify-center items-center">
+          <div className="relative w-[min(400px,85vw)] h-[min(400px,85vw)]">
+            <LetterGrid
+              centerLetter={gameState.centerLetter}
+              outerLetters={gameState.letters}
+              onLetterClick={handleLetterClick}
+            />
+          </div>
         </div>
 
         {/* Control Buttons */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-4 mb-2">
           <button 
-            className="px-6 py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors"
+            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleDelete}
           >
             Delete
           </button>
           <button 
-            className="px-6 py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors"
+            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleShuffle}
           >
             Shuffle
           </button>
           <button 
-            className="px-6 py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors"
+            className="px-2 sm:px-6 py-1.5 sm:py-2 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
             onClick={handleSort}
           >
             Sort {getSortEmoji(sortMode)}
           </button>
           <button 
-            className={`px-6 py-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 text-green-400 transition-colors ${
-              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            className={`px-2 sm:px-6 py-1.5 sm:py-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap ${
+              currentWord.length < 4 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={currentWord.length < 4}
           >
-            {isSubmitting ? 'Checking...' : 'Enter'}
+            Enter
           </button>
         </div>
 
         {/* Found Words */}
-        <div className="pt-8 border-t border-white/20">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {getSortedWords().map((word, index) => (
-              <motion.div
-                key={word + index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="px-3 py-1 bg-white/10 text-white/90 rounded-full uppercase"
-              >
-                {word}
-              </motion.div>
-            ))}
+        <div className="pt-2 border-t border-white/20">
+          <div className="flex-1 min-h-0 overflow-y-auto max-h-[25vh]">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {getSortedWords().map((word, index) => (
+                <motion.div
+                  key={word + index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="px-3 py-1 bg-white/10 text-white/90 rounded-full uppercase"
+                >
+                  {word.toUpperCase()}
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
