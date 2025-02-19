@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Burst component for achievement animations
 const Burst = ({ color }: { color: string }) => {
@@ -49,9 +49,9 @@ const PangramIndicator = ({
   isFound: boolean;
   justFound: boolean;
   allPangramsFound: boolean;
-  onMouseEnter: () => void;
+  onMouseEnter: (event: React.MouseEvent) => void;
   onMouseLeave: () => void;
-  onTouchStart: () => void;
+  onTouchStart: (event: React.TouchEvent) => void;
 }) => (
   <motion.div
     className="relative cursor-help"
@@ -96,6 +96,9 @@ export default function PuzzleInfo({
   outerLetters
 }: PuzzleInfoProps) {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const bingoRef = useRef<HTMLDivElement>(null);
+  const pangramRef = useRef<HTMLDivElement>(null);
   const [lastBingoState, setLastBingoState] = useState(false);
   const [lastFoundPangrams, setLastFoundPangrams] = useState<string[]>([]);
   const [showBingoBurst, setShowBingoBurst] = useState(false);
@@ -161,18 +164,31 @@ export default function PuzzleInfo({
       : `You found all ${pangramCount} pangrams!`;
   };
 
+  const handleTooltipShow = (type: 'bingo' | 'pangram', event: React.MouseEvent | React.TouchEvent) => {
+    const targetRef = type === 'bingo' ? bingoRef : pangramRef;
+    if (targetRef.current) {
+      const rect = targetRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.bottom + 8
+      });
+      setShowTooltip(type);
+    }
+  };
+
   return (
     <div className="flex gap-2 items-center">
       {bingoIsPossible && (
         <motion.div 
+          ref={bingoRef}
           className="relative cursor-help"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
-          onMouseEnter={() => setShowTooltip('bingo')}
+          onMouseEnter={(e) => handleTooltipShow('bingo', e)}
           onMouseLeave={() => setShowTooltip(null)}
-          onTouchStart={() => {
-            setShowTooltip('bingo');
+          onTouchStart={(e) => {
+            handleTooltipShow('bingo', e);
             setTimeout(() => setShowTooltip(null), 2000);
           }}
         >
@@ -190,14 +206,20 @@ export default function PuzzleInfo({
             </motion.span>
           </AnimatePresence>
           {showTooltip === 'bingo' && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-10">
+            <div 
+              className="fixed transform -translate-x-1/2 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-50"
+              style={{ 
+                left: `${tooltipPosition.x}px`,
+                top: `${tooltipPosition.y}px`
+              }}
+            >
               {getBingoTooltip()}
             </div>
           )}
         </motion.div>
       )}
       
-      <div className="flex gap-0.5">
+      <div ref={pangramRef} className="flex gap-0.5">
         {Array.from({ length: Math.min(pangramCount, 3) }).map((_, index) => (
           <PangramIndicator
             key={index}
@@ -205,16 +227,22 @@ export default function PuzzleInfo({
             isFound={index < foundPangrams.length}
             justFound={justFoundPangrams.has(index)}
             allPangramsFound={foundPangrams.length === pangramCount}
-            onMouseEnter={() => setShowTooltip('pangram')}
+            onMouseEnter={(e) => handleTooltipShow('pangram', e)}
             onMouseLeave={() => setShowTooltip(null)}
-            onTouchStart={() => {
-              setShowTooltip('pangram');
+            onTouchStart={(e) => {
+              handleTooltipShow('pangram', e);
               setTimeout(() => setShowTooltip(null), 2000);
             }}
           />
         ))}
         {showTooltip === 'pangram' && (
-          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-10">
+          <div 
+            className="fixed transform -translate-x-1/2 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-50"
+            style={{ 
+              left: `${tooltipPosition.x}px`,
+              top: `${tooltipPosition.y}px`
+            }}
+          >
             {getPangramTooltip()}
           </div>
         )}
