@@ -61,7 +61,7 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
   return (
     <div className="flex items-center gap-2 w-full">
       <motion.div 
-        className={`relative h-8 bg-white/10 rounded-full overflow-hidden px-0 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[180px] ${
+        className={`relative h-8 bg-white/10 rounded-full overflow-hidden px-0 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[240px] lg:min-w-[280px] ${
           showLevelUpAnimation ? 'ring-2 ring-green-400/50 shadow-lg shadow-green-400/20' : ''
         }`}
         initial={false}
