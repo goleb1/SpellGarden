@@ -61,7 +61,7 @@ export default function YesterdaysPuzzleModal({
 
             {/* Title and Date */}
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-white">Yesterday's Puzzle</h2>
+              <h2 className="text-xl font-semibold text-white">Yesterday&apos;s Puzzle</h2>
               <p className="text-gray-400 text-sm">{formattedDate}</p>
             </div>
 
