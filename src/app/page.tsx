@@ -6,10 +6,16 @@ import Head from 'next/head';
 import LetterGrid from '@/components/LetterGrid';
 import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
+import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
-import { getNextPuzzleTime, setTestPuzzleIndex } from '@/lib/puzzleManager';
+import { getNextPuzzleTime, setTestPuzzleIndex, getPuzzleForDate } from '@/lib/puzzleManager';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
+
+interface YesterdaysPuzzleData extends ReturnType<typeof getPuzzleForDate> {
+  date: Date;
+  wordsByLength: Record<number, string[]>;
+}
 
 export default function Home() {
   const [gameState, setGameState] = useState(getInitialGameState());
@@ -18,6 +24,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>('chronological');
   const [timeToNextPuzzle, setTimeToNextPuzzle] = useState('');
+  const [isYesterdaysPuzzleModalOpen, setIsYesterdaysPuzzleModalOpen] = useState(false);
+  const [yesterdaysPuzzle, setYesterdaysPuzzle] = useState<YesterdaysPuzzleData | null>(null);
 
   // Load saved game state on mount
   useEffect(() => {
@@ -61,6 +69,28 @@ export default function Home() {
     const interval = setInterval(updateTimer, 60000); // Update every minute
     
     return () => clearInterval(interval);
+  }, []);
+
+  // Get yesterday's puzzle data
+  useEffect(() => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    const puzzle = getPuzzleForDate(yesterday);
+    
+    // Group words by length
+    const wordsByLength = puzzle.valid_words.reduce((acc, word) => {
+      const length = word.length;
+      if (!acc[length]) acc[length] = [];
+      acc[length].push(word);
+      return acc;
+    }, {} as Record<number, string[]>);
+
+    setYesterdaysPuzzle({
+      ...puzzle,
+      date: yesterday,
+      wordsByLength
+    });
   }, []);
 
   const handleLetterClick = (letter: string) => {
@@ -224,9 +254,12 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            <div className="hidden sm:block text-sm text-gray-400 whitespace-nowrap">
+            <button
+              onClick={() => setIsYesterdaysPuzzleModalOpen(true)}
+              className="text-sm text-gray-400 whitespace-nowrap hover:text-white transition-colors"
+            >
               Next puzzle in: {timeToNextPuzzle}
-            </div>
+            </button>
             <div className="w-full sm:w-auto flex items-center gap-4">
               <LevelIndicator 
                 score={gameState.score} 
@@ -367,6 +400,18 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        {yesterdaysPuzzle && (
+          <YesterdaysPuzzleModal
+            isOpen={isYesterdaysPuzzleModalOpen}
+            onClose={() => setIsYesterdaysPuzzleModalOpen(false)}
+            date={yesterdaysPuzzle.date}
+            centerLetter={yesterdaysPuzzle.center_letter.toUpperCase()}
+            outerLetters={yesterdaysPuzzle.outside_letters.map(l => l.toUpperCase())}
+            validWords={yesterdaysPuzzle.wordsByLength}
+          />
+        )}
       </main>
     </>
   );

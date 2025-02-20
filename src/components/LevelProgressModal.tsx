@@ -90,7 +90,7 @@ export default function LevelProgressModal({
             </button>
 
             {/* Title */}
-            <h2 className="text-xl font-semibold mb-6 text-white relative z-20">Level Progress</h2>
+            <h2 className="text-xl font-semibold mb-6 text-white relative z-20">Keep Growing! 🍃</h2>
 
             {/* Level progression */}
             <div className="space-y-8 relative">
