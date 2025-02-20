@@ -177,8 +177,8 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4 bg-black text-white flex flex-col h-screen">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8">
-        <div className="flex items-center mb-2 sm:mb-0">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 sm:mb-12">
+        <div className="flex items-center mb-2 sm:mb-0 w-full sm:w-auto relative">
           <h1 className="text-2xl font-bold">SpellGarden</h1>
           <div className="ml-2">
             <PuzzleInfo 
@@ -198,17 +198,22 @@ export default function Home() {
               Test Bingo
             </button>
           )}
+          <div className="sm:hidden absolute right-0 text-3xl font-bold tabular-nums flex items-center h-full">
+            {gameState.score}
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <div className="hidden sm:block text-sm text-gray-400 whitespace-nowrap">
             Next puzzle in: {timeToNextPuzzle}
           </div>
-          <LevelIndicator 
-            score={gameState.score} 
-            totalPossibleScore={gameState.totalPossibleScore} 
-          />
-          <div className="w-12 text-right text-3xl sm:text-4xl font-bold tabular-nums">
-            {gameState.score}
+          <div className="w-full sm:w-auto flex items-center gap-4">
+            <LevelIndicator 
+              score={gameState.score} 
+              totalPossibleScore={gameState.totalPossibleScore} 
+            />
+            <div className="hidden sm:block w-12 text-right text-4xl font-bold tabular-nums">
+              {gameState.score}
+            </div>
           </div>
         </div>
       </div>
@@ -216,21 +221,13 @@ export default function Home() {
       {/* Game Container */}
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0">
         {/* Word Input with Message Container */}
-        <div className="relative mb-2 sm:mb-4">
-          <input
-            type="text"
-            value={currentWord}
-            className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-2 sm:mb-4"
-            placeholder="Type or click letters"
-            readOnly
-          />
-          
+        <div className="relative mb-2 sm:mb-4 mt-4">
           {/* Absolutely positioned message */}
-          <div className="absolute left-0 right-0 top-full">
+          <div className="absolute left-0 right-0 bottom-full mb-2">
             <AnimatePresence>
               {message && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   className={`text-center text-lg font-semibold ${
@@ -242,6 +239,14 @@ export default function Home() {
               )}
             </AnimatePresence>
           </div>
+
+          <input
+            type="text"
+            value={currentWord}
+            className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-1 sm:mb-2"
+            placeholder="Type or click letters"
+            readOnly
+          />
         </div>
 
         {/* Letter Grid Container with Fixed Aspect Ratio */}

@@ -35,8 +35,8 @@ export default function LetterGrid({
     foundWords.map(word => word[0].toLowerCase())
   );
 
-  // Calculate sizes based on screen size
-  const radius = isMobile ? 88 : 82; // Tighter spacing on desktop
+  // Increased radius for better spacing on larger screens
+  const radius = isMobile ? 88 : 110; // Increased from 82 to 110 for desktop
 
   // Helper function to determine tile background color
   const getTileBackground = (letter: string, isCenter: boolean) => {
@@ -56,7 +56,7 @@ export default function LetterGrid({
       {/* Center hexagon */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <motion.button
-          className={`w-[80px] h-[92px] sm:w-[70px] sm:h-[80px] 
+          className={`w-[80px] h-[92px] sm:w-[100px] sm:h-[115px] 
                      [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                      cursor-pointer flex items-center justify-center
                      transition-colors ${getTileBackground(centerLetter, true)}`}
@@ -64,7 +64,7 @@ export default function LetterGrid({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <span className="text-2xl sm:text-xl font-bold text-black">
+          <span className="text-2xl sm:text-3xl font-bold text-black">
             {centerLetter}
           </span>
         </motion.button>
@@ -88,7 +88,7 @@ export default function LetterGrid({
           >
             <motion.button
               layoutId={`outer-letter-${letter}`}
-              className={`w-[80px] h-[92px] sm:w-[70px] sm:h-[80px]
+              className={`w-[80px] h-[92px] sm:w-[100px] sm:h-[115px]
                        [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                        cursor-pointer flex items-center justify-center
                        transition-colors ${getTileBackground(letter, false)}`}
@@ -101,7 +101,7 @@ export default function LetterGrid({
             >
               <motion.span 
                 layout
-                className="text-xl sm:text-lg font-bold text-black"
+                className="text-xl sm:text-2xl font-bold text-black"
               >
                 {letter}
               </motion.span>
@@ -111,4 +111,4 @@ export default function LetterGrid({
       })}
     </div>
   );
-} 
+}
