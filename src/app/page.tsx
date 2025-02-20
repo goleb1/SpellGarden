@@ -327,20 +327,42 @@ export default function Home() {
                 layout
                 className="flex flex-wrap gap-2 sm:gap-3 justify-center md:landscape:justify-start p-1 sm:p-4"
               >
-                {getSortedWords().map((word) => (
-                  <motion.div
-                    layout
-                    key={word}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
-                    }}
-                    className="px-3 py-1 bg-white/10 text-white/90 rounded-full uppercase"
-                  >
-                    {word.toUpperCase()}
-                  </motion.div>
-                ))}
+                {getSortedWords().map((word) => {
+                  // Determine styling based on word length and pangram status
+                  const isPangram = gameState.pangrams.includes(word);
+                  const getWordStyle = () => {
+                    if (isPangram) {
+                      return "bg-gradient-to-r from-rose-500/80 to-pink-500/80 text-white font-semibold shadow-lg shadow-rose-500/20";
+                    }
+                    switch (word.length) {
+                      case 4:
+                        return "bg-white/10 text-white/90"; // Basic style for 4-letter words
+                      case 5:
+                        return "bg-emerald-500/20 text-emerald-100"; // Light green for 5-letter words
+                      case 6:
+                        return "bg-violet-500/30 text-violet-100"; // Light purple for 6-letter words
+                      case 7:
+                        return "bg-amber-500/30 text-amber-100"; // Light gold for 7-letter words
+                      default:
+                        return "bg-blue-500/30 text-blue-100"; // Light blue for 8+ letter words
+                    }
+                  };
+
+                  return (
+                    <motion.div
+                      layout
+                      key={word}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
+                      }}
+                      className={`px-3 py-1 rounded-full uppercase ${getWordStyle()}`}
+                    >
+                      {word.toUpperCase()}
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             </div>
           </div>
