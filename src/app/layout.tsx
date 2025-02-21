@@ -9,7 +9,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'SpellGarden',
+  title: process.env.NODE_ENV === 'development' ? 'SpellGarden (🤖 DEV)' : 'SpellGarden',
   description: 'A word puzzle game where you find words and watch your vocabulary grow!',
 };
 
