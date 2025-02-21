@@ -25,9 +25,11 @@ export default function LevelProgressModal({
 
   // Calculate the progress line height based on current progress between levels
   const calculateProgressHeight = () => {
+    const SEGMENT_HEIGHT = 100 / 7; // Height per segment with 7 gaps between 8 levels
+    
     // If we haven't reached Sprout yet
     if (progress < LEVELS[1].threshold) {
-      return (progress / LEVELS[1].threshold) * 20; // First 20% of height
+      return (progress / LEVELS[1].threshold) * SEGMENT_HEIGHT; // First segment
     }
     
     // Find the current level index
@@ -35,12 +37,12 @@ export default function LevelProgressModal({
     const currentThreshold = LEVELS[currentLevelIndex].threshold;
     const nextThreshold = LEVELS[currentLevelIndex + 1]?.threshold ?? 1;
     
-    // Calculate base height for completed levels (20% per level)
-    const baseHeight = currentLevelIndex * 20;
+    // Calculate base height for completed levels
+    const baseHeight = currentLevelIndex * SEGMENT_HEIGHT;
     
     // Calculate progress to next level
     const levelProgress = (progress - currentThreshold) / (nextThreshold - currentThreshold);
-    const additionalHeight = Math.min(levelProgress * 20, 20);
+    const additionalHeight = Math.min(levelProgress * SEGMENT_HEIGHT, SEGMENT_HEIGHT);
     
     return Math.min(baseHeight + additionalHeight, 100);
   };
@@ -120,7 +122,7 @@ export default function LevelProgressModal({
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-[#1C1C1E] relative z-10 ${
                           isCompleted
-                            ? 'bg-[#2D5A27] border-[#2D5A27]'
+                            ? 'bg-[#142911] border-[#2D5A27]'
                             : 'border-[#333333]'
                         } ${isCurrent ? 'ring-2 ring-[#2D5A27] ring-offset-2 ring-offset-[#1C1C1E]' : ''}`}
                       >

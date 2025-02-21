@@ -1,4 +1,3 @@
-import { isInDictionary } from './dictionary';
 import { getTodaysPuzzle } from './puzzleManager';
 
 interface GameState {

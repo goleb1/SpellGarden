@@ -9,12 +9,14 @@ export interface Level {
 }
 
 export const LEVELS: Level[] = [
-  { name: 'Seedling', emoji: '🌱', threshold: 0 },
-  { name: 'Sprout', emoji: '🌿', threshold: 0.1 },
-  { name: 'Budding', emoji: '🪴', threshold: 0.25 },
-  { name: 'Blooming', emoji: '🌸', threshold: 0.45 },
-  { name: 'Verdant', emoji: '🌳', threshold: 0.65 },
-  { name: 'Botanist', emoji: '👩‍🌾', threshold: 0.8 },
+  { name: 'Dormant', emoji: '💤', threshold: 0 },
+  { name: 'Seedling', emoji: '🌱', threshold: 0.05 },
+  { name: 'Sprout', emoji: '🌿', threshold: 0.15 },
+  { name: 'Budding', emoji: '🪴', threshold: 0.3 },
+  { name: 'Blooming', emoji: '🌸', threshold: 0.4 },
+  { name: 'Flourishing', emoji: '💐', threshold: 0.5 },
+  { name: 'Verdant', emoji: '🌳', threshold: 0.6 },
+  { name: 'Botanist', emoji: '👩‍🌾', threshold: 0.7 },
 ];
 
 interface LevelIndicatorProps {
