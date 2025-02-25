@@ -1,12 +1,14 @@
-import puzzleSet from '../../puzzle_set.json';
+import puzzleSet from '../../puzzle_sets.json';
 
 interface Puzzle {
   id: string;
+  live_date: string;
   center_letter: string;
   outside_letters: string[];
   pangrams: string[];
   bingo_possible: boolean;
   total_score: number;
+  total_words: number;
   valid_words: string[];
 }
 
@@ -23,18 +25,34 @@ export const setTestPuzzleIndex = (index: number) => {
   }
 };
 
-// Function to get a deterministic index based on the date
-const getDailyPuzzleIndex = (date: Date): number => {
+// Function to get today's puzzle based on live_date
+const getDailyPuzzle = (date: Date): Puzzle => {
   // If we have an override index for testing, use that instead
   if (process.env.NODE_ENV === 'development' && overridePuzzleIndex !== null) {
-    return overridePuzzleIndex;
+    return puzzleSet[overridePuzzleIndex];
   }
 
-  // Get days since epoch (January 1, 1970)
-  const daysSinceEpoch = Math.floor(date.getTime() / (1000 * 60 * 60 * 24));
+  // Format the date as YYYY-MM-DD
+  const formattedDate = date.toISOString().split('T')[0];
   
-  // Use modulo to cycle through the puzzles
-  return daysSinceEpoch % puzzleSet.length;
+  // Find the puzzle scheduled for today
+  const todaysPuzzle = puzzleSet.find(puzzle => puzzle.live_date === formattedDate);
+  
+  if (!todaysPuzzle) {
+    // If no puzzle is scheduled for today, find the next available puzzle
+    const futurePuzzles = puzzleSet
+      .filter(puzzle => puzzle.live_date > formattedDate)
+      .sort((a, b) => a.live_date.localeCompare(b.live_date));
+    
+    if (futurePuzzles.length > 0) {
+      return futurePuzzles[0];
+    }
+    
+    // If no future puzzles, return the last puzzle in the set
+    return puzzleSet[puzzleSet.length - 1];
+  }
+  
+  return todaysPuzzle;
 };
 
 // Get today's puzzle
@@ -42,18 +60,14 @@ export const getTodaysPuzzle = (): Puzzle => {
   const today = new Date();
   // Reset to start of day in user's timezone
   today.setHours(0, 0, 0, 0);
-  
-  const index = getDailyPuzzleIndex(today);
-  return puzzleSet[index];
+  return getDailyPuzzle(today);
 };
 
 // Get puzzle for a specific date
 export const getPuzzleForDate = (date: Date): Puzzle => {
   // Reset to start of day
   date.setHours(0, 0, 0, 0);
-  
-  const index = getDailyPuzzleIndex(date);
-  return puzzleSet[index];
+  return getDailyPuzzle(date);
 };
 
 // Get the next puzzle change time

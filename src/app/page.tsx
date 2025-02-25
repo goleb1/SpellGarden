@@ -249,7 +249,7 @@ export default function Home() {
                 Test Bingo
               </button>
             )}
-            <div className="sm:hidden absolute right-0 text-3xl font-bold tabular-nums flex items-center h-full">
+            <div className="sm:hidden absolute right-0 pr-4 text-3xl font-bold tabular-nums flex items-center h-full">
               {gameState.score}
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function Home() {
                 score={gameState.score} 
                 totalPossibleScore={gameState.totalPossibleScore} 
               />
-              <div className="hidden sm:block w-12 text-right text-4xl font-bold tabular-nums">
+              <div className="hidden sm:block w-16 text-right text-4xl font-bold tabular-nums">
                 {gameState.score}
               </div>
             </div>
