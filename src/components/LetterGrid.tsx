@@ -41,9 +41,11 @@ export default function LetterGrid({
   // Helper function to determine tile background color
   const getTileBackground = (letter: string, isCenter: boolean) => {
     if (!bingoIsPossible) {
-      return isCenter ? 'bg-amber-100 hover:bg-amber-200' : 'bg-purple-200 hover:bg-purple-300';
+      // When bingo is NOT possible, all tiles start and stay in the darker shade
+      return isCenter ? 'bg-amber-300 hover:bg-amber-400' : 'bg-purple-400 hover:bg-purple-500';
     }
     
+    // When bingo IS possible, tiles start light and turn darker when found
     const isFound = foundStartingLetters.has(letter.toLowerCase());
     if (isCenter) {
       return isFound ? 'bg-amber-300 hover:bg-amber-400' : 'bg-amber-100 hover:bg-amber-200';

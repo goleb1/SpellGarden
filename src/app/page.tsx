@@ -277,7 +277,7 @@ export default function Home() {
           {/* Game Board Section */}
           <div className="flex flex-col min-h-0">
             {/* Word Input with Message Container */}
-            <div className="relative mb-2 sm:mb-4 mt-4">
+            <div className="relative mb-2 sm:mb-4 mt-4 flex justify-center">
               {/* Absolutely positioned message */}
               <div className="absolute left-0 right-0 bottom-full mb-2">
                 <AnimatePresence>
@@ -299,7 +299,7 @@ export default function Home() {
               <input
                 type="text"
                 value={currentWord}
-                className="w-full p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-lg mb-1 sm:mb-2"
+                className="w-full max-w-full sm:max-w-md md:max-w-lg p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-full mb-1 sm:mb-2"
                 placeholder="Type or click letters"
                 readOnly
               />
@@ -321,25 +321,25 @@ export default function Home() {
             {/* Control Buttons */}
             <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-6 mb-2 sm:mb-6">
               <button 
-                className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-              <button 
-                className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
-                onClick={handleShuffle}
-              >
-                Shuffle
-              </button>
-              <button 
-                className="px-2 sm:px-8 py-1.5 sm:py-2.5 border border-white/20 rounded-lg hover:bg-white/10 text-white/90 transition-colors text-sm sm:text-base whitespace-nowrap"
+                className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tr-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-1 sm:order-1"
                 onClick={handleSort}
               >
                 Sort {getSortEmoji(sortMode)}
               </button>
               <button 
-                className={`px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap ${
+                className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tr-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-2 sm:order-2"
+                onClick={handleShuffle}
+              >
+                Shuffle
+              </button>
+              <button 
+                className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tl-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-3 sm:order-3"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+              <button 
+                className={`px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tl-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-4 sm:order-4 ${
                   currentWord.length < 4 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 onClick={handleSubmit}
