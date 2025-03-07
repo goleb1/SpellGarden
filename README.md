@@ -11,32 +11,6 @@ A word puzzle game inspired by the NYT Spelling Bee, with a garden theme. Create
 - Word validation against dictionary
 - Mobile-responsive design
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ and npm
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/spellgarden.git
-cd spellgarden
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
 ## Game Rules
 
 - Words must:
@@ -47,9 +21,9 @@ npm run dev
 - Letters can be reused within a word
 - Scoring:
   - 4-letter words = 1 point
-  - 5-letter words = 5 points
-  - 6+ letter words = 1 point per letter
-  - Pangrams (words using all 7 letters) get 7 bonus points
+  - 5+ letter words = 1 point per letter
+  - Pangrams (words using all 7 letters) get 10 bonus points
+  - Bingo (finding a word that starts with each of the 7 letters [not always possible]) gets 10 bonus points
 
 ## Tech Stack
 
@@ -57,7 +31,3 @@ npm run dev
 - TypeScript
 - Tailwind CSS
 - Framer Motion
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
