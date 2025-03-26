@@ -69,7 +69,7 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
         onClick={() => setIsModalOpen(true)}
       >
         <motion.div 
-          className={`relative h-8 bg-white/10 rounded-full overflow-hidden px-0 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[240px] lg:min-w-[280px] ${
+          className={`relative h-8 bg-white/10 rounded-full overflow-hidden px-2 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[300px] lg:min-w-[360px] ${
             showLevelUpAnimation ? 'ring-2 ring-green-400/50 shadow-lg shadow-green-400/20' : ''
           } hover:bg-white/20 transition-colors`}
           initial={false}
@@ -97,6 +97,7 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
+                className="text-sm"
               >
                 {currentLevel.name}
               </motion.span>

@@ -8,7 +8,10 @@ import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
-import { getNextPuzzleTime, setTestPuzzleIndex, getPuzzleForDate } from '@/lib/puzzleManager';
+import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useGameState } from '@/lib/hooks/useGameState';
+import Menu from '@/components/Menu';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
 
@@ -18,7 +21,7 @@ interface YesterdaysPuzzleData extends ReturnType<typeof getPuzzleForDate> {
 }
 
 export default function Home() {
-  const [gameState, setGameState] = useState(getInitialGameState());
+  const { user, signOut } = useAuth();
   const [currentWord, setCurrentWord] = useState('');
   const [message, setMessage] = useState<{text: string; type: 'error' | 'success'} | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,31 +30,8 @@ export default function Home() {
   const [isYesterdaysPuzzleModalOpen, setIsYesterdaysPuzzleModalOpen] = useState(false);
   const [yesterdaysPuzzle, setYesterdaysPuzzle] = useState<YesterdaysPuzzleData | null>(null);
 
-  // Load saved game state on mount
-  useEffect(() => {
-    try {
-      const savedState = localStorage.getItem('gameState');
-      if (savedState) {
-        const parsed = JSON.parse(savedState);
-        // Only restore if parsed data is valid and it's the same puzzle
-        if (parsed && parsed.id && parsed.id === gameState.id) {
-          setGameState(parsed);
-        } else {
-          // Clear saved state if it's invalid or a different puzzle
-          localStorage.removeItem('gameState');
-        }
-      }
-    } catch (error) {
-      // If there's any error parsing the saved state, remove it
-      console.error('Error loading saved game state:', error);
-      localStorage.removeItem('gameState');
-    }
-  }, [gameState.id]);
-
-  // Save game state when it changes
-  useEffect(() => {
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-  }, [gameState]);
+  const initialGameState = getInitialGameState();
+  const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
 
   // Update countdown timer
   useEffect(() => {
@@ -102,10 +82,10 @@ export default function Home() {
   };
 
   const handleShuffle = () => {
-    setGameState(prev => ({
-      ...prev,
-      letters: shuffleLetters(prev.letters)
-    }));
+    if (!gameState) return;
+    updateState({
+      letters: shuffleLetters(gameState.letters)
+    });
   };
 
   const handleSort = () => {
@@ -133,6 +113,7 @@ export default function Home() {
   };
 
   const getSortedWords = () => {
+    if (!gameState) return [];
     const words = [...gameState.foundWords];
     switch (sortMode) {
       case 'alphabetical':
@@ -145,18 +126,17 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting || !gameState) return;
     setIsSubmitting(true);
 
     try {
       const result = await submitWord(currentWord, gameState);
       
       if (result.isValid) {
-        setGameState(prev => ({
-          ...prev,
-          score: prev.score + result.score,
-          foundWords: [...prev.foundWords, currentWord.toLowerCase()]
-        }));
+        await updateState({
+          score: gameState.score + result.score,
+          foundWords: [...gameState.foundWords, currentWord.toLowerCase()]
+        });
       }
       
       if (result.message) {
@@ -181,6 +161,8 @@ export default function Home() {
 
   // Handle keyboard input
   useEffect(() => {
+    if (!gameState) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Backspace') {
         handleDelete();
@@ -196,14 +178,15 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.centerLetter, gameState.letters, currentWord, isSubmitting]);
+  }, [gameState?.centerLetter, gameState?.letters, currentWord, isSubmitting]);
 
-  const switchToBingoPuzzle = () => {
-    // Use the first puzzle in the set which we know has a bingo
-    setTestPuzzleIndex(0);
-    // Reset game state with new puzzle
-    setGameState(getInitialGameState());
-  };
+  if (stateLoading || !gameState) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -228,46 +211,41 @@ export default function Home() {
       </Head>
       <main className="min-h-screen p-4 bg-black text-white flex flex-col h-screen">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 sm:mb-12">
-          <div className="flex items-center mb-2 sm:mb-0 w-full sm:w-auto relative">
-            <h1 className="text-2xl font-bold">SpellGarden</h1>
-            <div className="ml-2">
-              <PuzzleInfo 
-                bingoIsPossible={gameState.bingoIsPossible}
-                pangramCount={gameState.pangrams.length}
-                foundPangrams={gameState.foundWords.filter(word => gameState.pangrams.includes(word))}
-                foundWords={gameState.foundWords}
-                centerLetter={gameState.centerLetter}
-                outerLetters={gameState.letters}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-2 sm:mb-8">
+          {/* Top row with menu, title, info, and score on mobile */}
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <div className="flex items-center">
+              <Menu 
+                onShowYesterdaysPuzzle={() => setIsYesterdaysPuzzleModalOpen(true)}
+                timeToNextPuzzle={timeToNextPuzzle}
               />
+              <h1 className="text-2xl font-bold">SpellGarden</h1>
+              <div className="ml-2">
+                <PuzzleInfo 
+                  bingoIsPossible={gameState.bingoIsPossible}
+                  pangramCount={gameState.pangrams.length}
+                  foundPangrams={gameState.foundWords.filter(word => gameState.pangrams.includes(word))}
+                  foundWords={gameState.foundWords}
+                  centerLetter={gameState.centerLetter}
+                  outerLetters={gameState.letters}
+                />
+              </div>
             </div>
-            {process.env.NODE_ENV === 'development' && (
-              <button
-                onClick={switchToBingoPuzzle}
-                className="ml-4 px-2 py-1 text-xs bg-purple-500/20 border border-purple-500/30 rounded hover:bg-purple-500/30 text-purple-300"
-              >
-                Test Bingo
-              </button>
-            )}
-            <div className="sm:hidden absolute right-0 pr-4 text-3xl font-bold tabular-nums flex items-center h-full">
+            {/* Score - visible on mobile only in header */}
+            <div className="sm:hidden text-xl font-bold min-w-[3ch] text-right">
               {gameState.score}
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            <button
-              onClick={() => setIsYesterdaysPuzzleModalOpen(true)}
-              className="text-sm text-gray-400 whitespace-nowrap hover:text-white transition-colors"
-            >
-              Next puzzle in: {timeToNextPuzzle}
-            </button>
-            <div className="w-full sm:w-auto flex items-center gap-4">
-              <LevelIndicator 
-                score={gameState.score} 
-                totalPossibleScore={gameState.totalPossibleScore} 
-              />
-              <div className="hidden sm:block w-16 text-right text-4xl font-bold tabular-nums">
-                {gameState.score}
-              </div>
+
+          {/* Level indicator row */}
+          <div className="flex items-center justify-center sm:justify-start gap-4 w-full sm:w-auto">
+            <LevelIndicator 
+              score={gameState.score} 
+              totalPossibleScore={gameState.totalPossibleScore}
+            />
+            {/* Score - visible on desktop only next to level indicator */}
+            <div className="hidden sm:block text-xl font-bold min-w-[3ch] text-right">
+              {gameState.score}
             </div>
           </div>
         </div>
@@ -277,9 +255,9 @@ export default function Home() {
           {/* Game Board Section */}
           <div className="flex flex-col min-h-0">
             {/* Word Input with Message Container */}
-            <div className="relative mb-2 sm:mb-4 mt-4 flex justify-center">
+            <div className="relative mb-2 sm:mb-4 flex justify-center">
               {/* Absolutely positioned message */}
-              <div className="absolute left-0 right-0 bottom-full mb-2">
+              <div className="absolute left-0 right-0 bottom-full mb-1 sm:mb-2">
                 <AnimatePresence>
                   {message && (
                     <motion.div
@@ -299,7 +277,7 @@ export default function Home() {
               <input
                 type="text"
                 value={currentWord}
-                className="w-full max-w-full sm:max-w-md md:max-w-lg p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-full mb-1 sm:mb-2"
+                className="w-full max-w-full sm:max-w-md md:max-w-lg p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-full"
                 placeholder="Type or click letters"
                 readOnly
               />
