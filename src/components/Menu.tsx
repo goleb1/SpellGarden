@@ -71,7 +71,7 @@ export default function Menu({ onShowYesterdaysPuzzle, timeToNextPuzzle }: MenuP
                   className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
                 >
                   <span className="text-lg">📅</span>
-                  Yesterday's Puzzle
+                  Yesterday&apos;s Puzzle
                 </button>
 
                 {/* Divider */}

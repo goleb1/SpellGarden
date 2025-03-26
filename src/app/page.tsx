@@ -178,7 +178,7 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState?.centerLetter, gameState?.letters, currentWord, isSubmitting]);
+  }, [gameState, handleDelete, handleSubmit, handleLetterClick, isSubmitting]);
 
   if (stateLoading || !gameState) {
     return (
