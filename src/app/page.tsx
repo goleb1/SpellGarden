@@ -222,7 +222,7 @@ export default function Home() {
               </div>
             </div>
             {/* Score - visible on mobile only in header */}
-            <div className="sm:hidden text-xl font-bold min-w-[3ch] text-right">
+            <div className="sm:hidden text-2xl font-bold min-w-[3ch] text-right">
               {gameState.score}
             </div>
           </div>
@@ -234,7 +234,7 @@ export default function Home() {
               totalPossibleScore={gameState.totalPossibleScore}
             />
             {/* Score - visible on desktop only next to level indicator */}
-            <div className="hidden sm:block text-xl font-bold min-w-[3ch] text-right">
+            <div className="hidden sm:block text-2xl font-bold min-w-[3ch] text-right">
               {gameState.score}
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function Home() {
         {/* Game Container */}
         <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 md:landscape:max-w-[1400px] md:landscape:grid md:landscape:grid-cols-[1fr_1px_minmax(350px,35%)] md:landscape:gap-x-8">
           {/* Game Board Section */}
-          <div className="flex flex-col min-h-0">
+          <div className="flex flex-col min-h-0 flex-1">
             {/* Word Input with Message Container */}
             <div className="relative mb-2 sm:mb-4 flex justify-center">
               {/* Absolutely positioned message */}
@@ -274,7 +274,7 @@ export default function Home() {
             </div>
 
             {/* Letter Grid Container */}
-            <div className="mb-2 flex justify-center items-center">
+            <div className="flex justify-center items-center">
               <div className="relative w-[min(400px,85vw)] h-[min(400px,85vw)] md:landscape:w-[min(400px,50vw)] md:landscape:h-[min(400px,50vw)]">
                 <LetterGrid
                   centerLetter={gameState.centerLetter}
@@ -286,8 +286,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Control Buttons */}
-            <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-6 mb-2 sm:mb-6">
+            {/* Control Buttons - Now directly under game board */}
+            <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-6 mt-2 sm:mt-6">
               <button 
                 className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tr-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-1 sm:order-1"
                 onClick={handleSort}
@@ -316,20 +316,14 @@ export default function Home() {
                 Enter
               </button>
             </div>
-          </div>
 
-          {/* Vertical Divider */}
-          <div className="hidden md:landscape:block w-px bg-white/20" />
-
-          {/* Found Words */}
-          <div className="pt-2 sm:pt-6 border-t border-white/20 md:landscape:border-t-0 md:landscape:pt-4">
-            <div className="flex-1 min-h-0 overflow-y-auto max-h-[25vh] sm:max-h-[30vh] md:landscape:max-h-[85vh]">
+            {/* Found Words - Mobile Only - Now at the bottom */}
+            <div className="md:landscape:hidden flex-1 min-h-0 overflow-y-auto mt-4">
               <motion.div 
                 layout
-                className="flex flex-wrap gap-2 sm:gap-3 justify-center md:landscape:justify-start p-1 sm:p-4"
+                className="flex flex-wrap gap-2 justify-center p-1"
               >
                 {getSortedWords().map((word) => {
-                  // Determine styling based on word length and pangram status
                   const isPangram = gameState.pangrams.includes(word);
                   const getWordStyle = () => {
                     if (isPangram) {
@@ -337,15 +331,64 @@ export default function Home() {
                     }
                     switch (word.length) {
                       case 4:
-                        return "bg-white/10 text-white/90"; // Basic style for 4-letter words
+                        return "bg-white/10 text-white/90";
                       case 5:
-                        return "bg-emerald-500/20 text-emerald-100"; // Light green for 5-letter words
+                        return "bg-emerald-500/20 text-emerald-100";
                       case 6:
-                        return "bg-violet-500/30 text-violet-100"; // Light purple for 6-letter words
+                        return "bg-violet-500/30 text-violet-100";
                       case 7:
-                        return "bg-amber-500/30 text-amber-100"; // Light gold for 7-letter words
+                        return "bg-amber-500/30 text-amber-100";
                       default:
-                        return "bg-blue-500/30 text-blue-100"; // Light blue for 8+ letter words
+                        return "bg-blue-500/30 text-blue-100";
+                    }
+                  };
+
+                  return (
+                    <motion.div
+                      layout
+                      key={word}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
+                      }}
+                      className={`px-3 py-1 rounded-full uppercase ${getWordStyle()}`}
+                    >
+                      {word.toUpperCase()}
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Vertical Divider */}
+          <div className="hidden md:landscape:block w-px bg-white/20" />
+
+          {/* Found Words - Desktop Only */}
+          <div className="hidden md:landscape:flex md:landscape:flex-col md:landscape:pt-4">
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <motion.div 
+                layout
+                className="flex flex-wrap gap-2 sm:gap-3 justify-start p-1 sm:p-4"
+              >
+                {getSortedWords().map((word) => {
+                  const isPangram = gameState.pangrams.includes(word);
+                  const getWordStyle = () => {
+                    if (isPangram) {
+                      return "bg-gradient-to-r from-rose-500/80 to-pink-500/80 text-white font-semibold shadow-lg shadow-rose-500/20";
+                    }
+                    switch (word.length) {
+                      case 4:
+                        return "bg-white/10 text-white/90";
+                      case 5:
+                        return "bg-emerald-500/20 text-emerald-100";
+                      case 6:
+                        return "bg-violet-500/30 text-violet-100";
+                      case 7:
+                        return "bg-amber-500/30 text-amber-100";
+                      default:
+                        return "bg-blue-500/30 text-blue-100";
                     }
                   };
 
