@@ -17,7 +17,6 @@ type SortMode = 'alphabetical' | 'length' | 'chronological';
 
 interface YesterdaysPuzzleData extends ReturnType<typeof getPuzzleForDate> {
   date: Date;
-  wordsByLength: Record<number, string[]>;
 }
 
 export default function Home() {
@@ -58,18 +57,9 @@ export default function Home() {
     yesterday.setHours(0, 0, 0, 0);
     const puzzle = getPuzzleForDate(yesterday);
     
-    // Group words by length
-    const wordsByLength = puzzle.valid_words.reduce((acc, word) => {
-      const length = word.length;
-      if (!acc[length]) acc[length] = [];
-      acc[length].push(word);
-      return acc;
-    }, {} as Record<number, string[]>);
-
     setYesterdaysPuzzle({
       ...puzzle,
-      date: yesterday,
-      wordsByLength
+      date: yesterday
     });
   }, []);
 
@@ -387,7 +377,10 @@ export default function Home() {
             date={yesterdaysPuzzle.date}
             centerLetter={yesterdaysPuzzle.center_letter.toUpperCase()}
             outerLetters={yesterdaysPuzzle.outside_letters.map(l => l.toUpperCase())}
-            validWords={yesterdaysPuzzle.wordsByLength}
+            validWords={yesterdaysPuzzle.valid_words}
+            pangrams={yesterdaysPuzzle.pangrams}
+            puzzleId={yesterdaysPuzzle.id}
+            totalPossibleScore={yesterdaysPuzzle.total_score}
           />
         )}
       </main>
