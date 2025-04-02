@@ -366,7 +366,7 @@ export default function Home() {
           <div className="hidden md:landscape:block w-px bg-white/20" />
 
           {/* Found Words - Desktop Only */}
-          <div className="hidden md:landscape:flex md:landscape:flex-col md:landscape:pt-4">
+          <div className="hidden md:landscape:flex md:landscape:flex-col md:landscape:pt-4 md:landscape:h-full md:landscape:overflow-hidden">
             <div className="flex-1 min-h-0 overflow-y-auto">
               <motion.div 
                 layout
