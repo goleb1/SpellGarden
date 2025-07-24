@@ -7,6 +7,7 @@ import LetterGrid from '@/components/LetterGrid';
 import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
+import WordDefinitionModal from '@/components/WordDefinitionModal';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
 import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -28,6 +29,8 @@ export default function Home() {
   const [timeToNextPuzzle, setTimeToNextPuzzle] = useState('');
   const [isYesterdaysPuzzleModalOpen, setIsYesterdaysPuzzleModalOpen] = useState(false);
   const [yesterdaysPuzzle, setYesterdaysPuzzle] = useState<YesterdaysPuzzleData | null>(null);
+  const [selectedWord, setSelectedWord] = useState<string>('');
+  const [isWordDefinitionModalOpen, setIsWordDefinitionModalOpen] = useState(false);
 
   const initialGameState = getInitialGameState();
   const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
@@ -113,6 +116,11 @@ export default function Home() {
       case 'chronological':
         return words.reverse();
     }
+  };
+
+  const handleWordClick = (word: string) => {
+    setSelectedWord(word);
+    setIsWordDefinitionModalOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -344,18 +352,21 @@ export default function Home() {
                   };
 
                   return (
-                    <motion.div
+                    <motion.button
                       layout
                       key={word}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       transition={{
                         layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
                       }}
-                      className={`px-3 py-1 rounded-full uppercase ${getWordStyle()}`}
+                      onClick={() => handleWordClick(word)}
+                      className={`px-3 py-1 rounded-full uppercase cursor-pointer hover:opacity-80 transition-opacity ${getWordStyle()}`}
                     >
                       {word.toUpperCase()}
-                    </motion.div>
+                    </motion.button>
                   );
                 })}
               </motion.div>
@@ -393,18 +404,21 @@ export default function Home() {
                   };
 
                   return (
-                    <motion.div
+                    <motion.button
                       layout
                       key={word}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       transition={{
                         layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
                       }}
-                      className={`px-3 py-1 rounded-full uppercase ${getWordStyle()}`}
+                      onClick={() => handleWordClick(word)}
+                      className={`px-3 py-1 rounded-full uppercase cursor-pointer hover:opacity-80 transition-opacity ${getWordStyle()}`}
                     >
                       {word.toUpperCase()}
-                    </motion.div>
+                    </motion.button>
                   );
                 })}
               </motion.div>
@@ -426,6 +440,13 @@ export default function Home() {
             totalPossibleScore={yesterdaysPuzzle.total_score}
           />
         )}
+
+        <WordDefinitionModal
+          isOpen={isWordDefinitionModalOpen}
+          onClose={() => setIsWordDefinitionModalOpen(false)}
+          word={selectedWord}
+          isPangram={gameState?.pangrams.includes(selectedWord) || false}
+        />
       </main>
     </>
   );
