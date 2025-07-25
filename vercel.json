@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "app/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "pages/api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "build": {
+    "env": {
+      "NODEJS_VERSION": "20"
+    }
+  }
+}

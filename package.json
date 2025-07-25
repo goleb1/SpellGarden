@@ -36,6 +36,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "description": "A word puzzle game inspired by the NYT Spelling Bee, with a garden theme. Create words using the given letters, with the center letter being required in every word.",
   "main": "populate-words.js",
   "repository": {
