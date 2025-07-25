@@ -24,9 +24,9 @@ export class UserPreferencesManager {
         if (docSnap.exists()) {
           const data = docSnap.data();
           return {
-            hasSeenTutorial: false,
+            hasSeenTutorial: false, // default
             version: this.VERSION,
-            ...data,
+            ...data, // override with actual data
           };
         } else {
           // Return defaults for new authenticated users
@@ -51,9 +51,9 @@ export class UserPreferencesManager {
 
       const parsed = JSON.parse(stored);
       return {
-        hasSeenTutorial: false,
+        hasSeenTutorial: false, // default
         version: this.VERSION,
-        ...parsed,
+        ...parsed, // override with actual data
       };
     } catch (error) {
       console.error('Error reading user preferences from localStorage:', error);
@@ -126,5 +126,23 @@ export class UserPreferencesManager {
     } catch (error) {
       console.error('Error migrating preferences to Firestore:', error);
     }
+  }
+
+  // Debug method to check current status (for development/troubleshooting)
+  static async debugStatus(user?: User | null): Promise<void> {
+    if (process.env.NODE_ENV !== 'development') return;
+    
+    console.log('=== UserPreferences Debug ===');
+    console.log('User:', user ? `${user.uid} (${user.displayName})` : 'Guest');
+    
+    if (typeof window !== 'undefined') {
+      const localStorageData = localStorage.getItem(this.STORAGE_KEY);
+      console.log('localStorage data:', localStorageData);
+    }
+    
+    const prefs = await this.getPreferences(user);
+    console.log('Current preferences:', prefs);
+    console.log('Is first time user:', !prefs.hasSeenTutorial);
+    console.log('=============================');
   }
 }
