@@ -9,10 +9,12 @@ import PuzzleInfo from '@/components/PuzzleInfo';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import WordDefinitionModal from '@/components/WordDefinitionModal';
 import HintsModal from '@/components/HintsModal';
+import HowToPlayModal from '@/components/HowToPlayModal';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
 import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useGameState } from '@/lib/hooks/useGameState';
+import { UserPreferencesManager } from '@/lib/userPreferences';
 import Menu from '@/components/Menu';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
@@ -33,6 +35,9 @@ export default function Home() {
   const [selectedWord, setSelectedWord] = useState<string>('');
   const [isWordDefinitionModalOpen, setIsWordDefinitionModalOpen] = useState(false);
   const [isHintsModalOpen, setIsHintsModalOpen] = useState(false);
+  const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
+  const [tutorialCheckComplete, setTutorialCheckComplete] = useState(false);
+  const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
 
   const initialGameState = getInitialGameState();
   const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
@@ -67,6 +72,33 @@ export default function Home() {
       date: yesterday
     });
   }, []);
+
+  // Check if user needs tutorial on component mount
+  useEffect(() => {
+    const checkTutorialStatus = async () => {
+      if (!stateLoading && gameState) {
+        const isFirstTime = await UserPreferencesManager.isFirstTimeUser(user);
+        setIsFirstTimeUser(isFirstTime);
+        if (isFirstTime) {
+          setIsHowToPlayModalOpen(true);
+        }
+        setTutorialCheckComplete(true);
+      }
+    };
+    
+    checkTutorialStatus();
+  }, [stateLoading, gameState, user]);
+
+  // Migrate preferences when user signs in
+  useEffect(() => {
+    const migratePreferences = async () => {
+      if (user && tutorialCheckComplete) {
+        await UserPreferencesManager.migrateToFirestore(user);
+      }
+    };
+    
+    migratePreferences();
+  }, [user, tutorialCheckComplete]);
 
   const handleLetterClick = (letter: string) => {
     setCurrentWord(prev => prev + letter);
@@ -123,6 +155,16 @@ export default function Home() {
   const handleWordClick = (word: string) => {
     setSelectedWord(word);
     setIsWordDefinitionModalOpen(true);
+  };
+
+  const handleTutorialComplete = async () => {
+    await UserPreferencesManager.markTutorialSeen(user);
+    setIsHowToPlayModalOpen(false);
+    setIsFirstTimeUser(false);
+  };
+
+  const handleShowHowToPlay = () => {
+    setIsHowToPlayModalOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -218,6 +260,7 @@ export default function Home() {
               <Menu 
                 onShowYesterdaysPuzzle={() => setIsYesterdaysPuzzleModalOpen(true)}
                 onShowHints={() => setIsHintsModalOpen(true)}
+                onShowHowToPlay={handleShowHowToPlay}
                 timeToNextPuzzle={timeToNextPuzzle}
               />
               <h1 className="text-2xl font-bold">SpellGarden</h1>
@@ -461,6 +504,12 @@ export default function Home() {
             outerLetters={gameState.letters}
           />
         )}
+
+        <HowToPlayModal
+          isOpen={isHowToPlayModalOpen}
+          onClose={handleTutorialComplete}
+          isFirstTime={isFirstTimeUser}
+        />
       </main>
     </>
   );
