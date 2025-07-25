@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface MenuProps {
   onShowYesterdaysPuzzle: () => void;
+  onShowHints: () => void;
   timeToNextPuzzle: string;
 }
 
-export default function Menu({ onShowYesterdaysPuzzle, timeToNextPuzzle }: MenuProps) {
+export default function Menu({ onShowYesterdaysPuzzle, onShowHints, timeToNextPuzzle }: MenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signInWithGoogle, signOut } = useAuth();
 
@@ -61,6 +62,18 @@ export default function Menu({ onShowYesterdaysPuzzle, timeToNextPuzzle }: MenuP
 
                 {/* Divider */}
                 <div className="h-px bg-gray-700" />
+
+                {/* Hints Option */}
+                <button
+                  onClick={() => {
+                    onShowHints();
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
+                >
+                  <span className="text-lg">💡</span>
+                  Hints
+                </button>
 
                 {/* Yesterday's Puzzle Option */}
                 <button
