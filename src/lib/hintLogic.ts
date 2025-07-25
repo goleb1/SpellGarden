@@ -63,78 +63,189 @@ export function generateTwoLetterHints(
   return twoLetterCounts;
 }
 
-// Simple definition service for word clues
-export class SimpleDefinitionService {
-  private definitions: Record<string, { definition: string; partOfSpeech?: string }> = {
-    // Common 4-letter words
-    'base': { definition: 'The lowest part or foundation', partOfSpeech: 'noun' },
-    'able': { definition: 'Having the power or skill', partOfSpeech: 'adjective' },
-    'beat': { definition: 'To strike repeatedly', partOfSpeech: 'verb' },
-    'deal': { definition: 'To distribute or handle', partOfSpeech: 'verb' },
-    'seal': { definition: 'To close securely', partOfSpeech: 'verb' },
-    'beam': { definition: 'A ray of light', partOfSpeech: 'noun' },
-    'meal': { definition: 'Food eaten at a particular time', partOfSpeech: 'noun' },
-    'real': { definition: 'Actually existing', partOfSpeech: 'adjective' },
-    'tale': { definition: 'A story or narrative', partOfSpeech: 'noun' },
-    'late': { definition: 'After the expected time', partOfSpeech: 'adjective' },
-    'bale': { definition: 'A large bundle', partOfSpeech: 'noun' },
-    'male': { definition: 'Of the masculine gender', partOfSpeech: 'adjective' },
-    'team': { definition: 'A group working together', partOfSpeech: 'noun' },
-    'meat': { definition: 'Animal flesh as food', partOfSpeech: 'noun' },
-    
-    // Common 5+ letter words
-    'table': { definition: 'A piece of furniture with a flat top', partOfSpeech: 'noun' },
-    'metal': { definition: 'A solid material like iron or gold', partOfSpeech: 'noun' },
-    'blame': { definition: 'To hold responsible for a fault', partOfSpeech: 'verb' },
-    'beast': { definition: 'A large animal', partOfSpeech: 'noun' },
-    'beams': { definition: 'Rays of light (plural)', partOfSpeech: 'noun' },
-    'meals': { definition: 'Food portions (plural)', partOfSpeech: 'noun' },
-    'teams': { definition: 'Groups working together (plural)', partOfSpeech: 'noun' },
-    'steam': { definition: 'Water vapor from boiling', partOfSpeech: 'noun' },
-    'dream': { definition: 'Images in sleep', partOfSpeech: 'noun' },
-    'bleat': { definition: 'The cry of a sheep or goat', partOfSpeech: 'noun' },
-    'least': { definition: 'The smallest amount', partOfSpeech: 'adjective' },
-    'stable': { definition: 'A building for horses', partOfSpeech: 'noun' },
-    'enable': { definition: 'To make possible', partOfSpeech: 'verb' },
-    'detail': { definition: 'A small part or feature', partOfSpeech: 'noun' },
-    'beetle': { definition: 'A type of insect', partOfSpeech: 'noun' },
-    'bottle': { definition: 'A container for liquids', partOfSpeech: 'noun' },
-    'battle': { definition: 'A fight between armies', partOfSpeech: 'noun' },
-    'tablet': { definition: 'A flat piece or pill', partOfSpeech: 'noun' },
-    'delete': { definition: 'To remove or erase', partOfSpeech: 'verb' },
-    'beadle': { definition: 'A church official', partOfSpeech: 'noun' },
-    'meatal': { definition: 'Relating to a passage in the body', partOfSpeech: 'adjective' },
-    'ablate': { definition: 'To remove by cutting', partOfSpeech: 'verb' },
-    'belated': { definition: 'Coming late', partOfSpeech: 'adjective' },
-    'bleated': { definition: 'Made the cry of a sheep (past tense)', partOfSpeech: 'verb' },
-    'beatles': { definition: 'Famous rock band', partOfSpeech: 'noun' },
-    'stabled': { definition: 'Kept in a stable (past tense)', partOfSpeech: 'verb' },
-    'enabled': { definition: 'Made possible (past tense)', partOfSpeech: 'verb' },
-    'detailed': { definition: 'Showing many details', partOfSpeech: 'adjective' },
-    'defeated': { definition: 'Beaten in competition', partOfSpeech: 'verb' }
-  };
+// Enhanced definition service that uses the real dictionary API
+export class EnhancedDefinitionService {
+  private dictionaryService: any; // Will be imported from dictionaryService
 
-  async getDefinition(word: string): Promise<{ definition: string; partOfSpeech?: string } | null> {
-    // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 100));
+  constructor(dictionaryService: any) {
+    this.dictionaryService = dictionaryService;
+  }
+
+  // Create a hint from a real definition
+  private createHintFromDefinition(definition: string, word: string): string {
+    // Remove the word itself from the definition to avoid giving it away
+    const wordLower = word.toLowerCase();
+    let hint = definition.toLowerCase();
     
-    const def = this.definitions[word.toLowerCase()];
-    if (def) {
-      return def;
+    // Remove the word and its variations from the hint
+    hint = hint.replace(new RegExp(`\\b${wordLower}\\b`, 'gi'), 'this word');
+    hint = hint.replace(new RegExp(`\\b${wordLower}s\\b`, 'gi'), 'this word');
+    hint = hint.replace(new RegExp(`\\b${wordLower}ing\\b`, 'gi'), 'this word');
+    hint = hint.replace(new RegExp(`\\b${wordLower}ed\\b`, 'gi'), 'this word');
+    
+    // Clean up any double spaces
+    hint = hint.replace(/\s+/g, ' ');
+    
+    // Remove any remaining instances of the word (partial matches)
+    const wordParts = wordLower.split('');
+    for (let i = 0; i < wordParts.length - 1; i++) {
+      const part = wordParts.slice(i).join('');
+      if (part.length >= 3) {
+        hint = hint.replace(new RegExp(part, 'gi'), '...');
+      }
     }
     
-    // Fallback for words not in our simple dictionary
-    return {
-      definition: `A word meaning something related to "${word}"`,
-      partOfSpeech: 'unknown'
-    };
+    // Clean up any awkward phrasing
+    hint = hint.replace(/\s*\.{3,}\s*/g, '... ');
+    hint = hint.replace(/\s+/g, ' ');
+    
+    // Capitalize first letter
+    hint = hint.charAt(0).toUpperCase() + hint.slice(1);
+    
+    // If the hint is too short or unclear, add some context
+    if (hint.length < 20 || hint.includes('this word') && hint.length < 30) {
+      hint = `A word meaning: ${hint}`;
+    }
+    
+    return hint;
+  }
+
+  // Generate a hint based on word characteristics when no definition is available
+  private generatePatternHint(word: string): string {
+    const hints: string[] = [];
+
+    // Length-based hints
+    if (word.length === 4) {
+      hints.push('A short, common word');
+    } else if (word.length === 5) {
+      hints.push('A medium-length word');
+    } else if (word.length >= 6) {
+      hints.push('A longer word');
+    }
+
+    // Letter pattern hints
+    if (word.includes('ea')) {
+      hints.push('Contains the "ea" sound');
+    }
+    if (word.includes('ee')) {
+      hints.push('Contains the "ee" sound');
+    }
+    if (word.endsWith('ed')) {
+      hints.push('Past tense form');
+    }
+    if (word.endsWith('s')) {
+      hints.push('Plural form');
+    }
+    if (word.endsWith('le')) {
+      hints.push('Ends with "le"');
+    }
+    if (word.endsWith('al')) {
+      hints.push('Ends with "al"');
+    }
+
+    // Vowel pattern hints
+    const vowels = word.match(/[aeiou]/g);
+    if (vowels && vowels.length === 2) {
+      hints.push('Has two vowels');
+    } else if (vowels && vowels.length >= 3) {
+      hints.push('Has multiple vowels');
+    }
+
+    // If we have multiple hints, combine them
+    if (hints.length > 0) {
+      return hints.join(', ');
+    }
+
+    // Fallback hints based on word structure
+    if (word.length <= 4) {
+      return 'A short, everyday word';
+    } else if (word.length <= 6) {
+      return 'A common word of medium length';
+    } else {
+      return 'A longer, more complex word';
+    }
+  }
+
+  async getDefinition(word: string): Promise<{ definition: string; partOfSpeech?: string } | null> {
+    try {
+      // Try to get the real definition from the dictionary API
+      const definitionData = await this.dictionaryService.getDefinition(word);
+      
+      if (definitionData && definitionData.meanings && definitionData.meanings.length > 0) {
+        // Use the first definition from the first meaning
+        const firstMeaning = definitionData.meanings[0];
+        const firstDefinition = firstMeaning.definitions[0];
+        
+        if (firstDefinition && firstDefinition.definition) {
+          return {
+            definition: this.createHintFromDefinition(firstDefinition.definition, word),
+            partOfSpeech: firstMeaning.partOfSpeech
+          };
+        }
+      }
+      
+      // If no definition found, fall back to pattern-based hints
+      return {
+        definition: this.generatePatternHint(word),
+        partOfSpeech: this.detectPartOfSpeech(word)
+      };
+      
+    } catch (error) {
+      console.warn(`Failed to get definition for word: ${word}`, error);
+      
+      // Fall back to pattern-based hints
+      return {
+        definition: this.generatePatternHint(word),
+        partOfSpeech: this.detectPartOfSpeech(word)
+      };
+    }
+  }
+
+  // Detect part of speech based on word endings and patterns
+  private detectPartOfSpeech(word: string): string | undefined {
+    const wordLower = word.toLowerCase();
+    
+    // Verb endings
+    if (wordLower.endsWith('ed')) return 'verb';
+    if (wordLower.endsWith('ing')) return 'verb';
+    if (wordLower.endsWith('ize') || wordLower.endsWith('ise')) return 'verb';
+    if (wordLower.endsWith('ate')) return 'verb';
+    if (wordLower.endsWith('ify')) return 'verb';
+    
+    // Adjective endings
+    if (wordLower.endsWith('able') || wordLower.endsWith('ible')) return 'adjective';
+    if (wordLower.endsWith('al')) return 'adjective';
+    if (wordLower.endsWith('ic')) return 'adjective';
+    if (wordLower.endsWith('ous')) return 'adjective';
+    if (wordLower.endsWith('ful')) return 'adjective';
+    if (wordLower.endsWith('less')) return 'adjective';
+    if (wordLower.endsWith('ive')) return 'adjective';
+    if (wordLower.endsWith('y')) return 'adjective';
+    
+    // Adverb endings
+    if (wordLower.endsWith('ly')) return 'adverb';
+    
+    // Noun endings
+    if (wordLower.endsWith('tion') || wordLower.endsWith('sion')) return 'noun';
+    if (wordLower.endsWith('ment')) return 'noun';
+    if (wordLower.endsWith('ness')) return 'noun';
+    if (wordLower.endsWith('ity')) return 'noun';
+    if (wordLower.endsWith('er')) return 'noun';
+    if (wordLower.endsWith('or')) return 'noun';
+    if (wordLower.endsWith('ist')) return 'noun';
+    if (wordLower.endsWith('ism')) return 'noun';
+    
+    // Plural forms
+    if (wordLower.endsWith('s') && !wordLower.endsWith('ss')) return 'noun';
+    
+    return undefined; // Don't show "unknown", just omit it
   }
 }
 
 export async function generateWordClues(
   validWords: string[], 
   foundWords: string[],
-  definitionService: SimpleDefinitionService,
+  definitionService: EnhancedDefinitionService,
   maxClues: number = 15
 ): Promise<WordClue[]> {
   const unfoundWords = validWords.filter(word => !foundWords.includes(word.toLowerCase()));

@@ -6,11 +6,12 @@ import {
   generateLetterCountGrid, 
   generateTwoLetterHints, 
   generateWordClues, 
-  SimpleDefinitionService,
+  EnhancedDefinitionService,
   type LetterCountGrid,
   type TwoLetterHints,
   type WordClue
 } from '@/lib/hintLogic';
+import { dictionaryService } from '@/lib/dictionaryService';
 
 interface HintsModalProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export default function HintsModal({
   const [loadingClues, setLoadingClues] = useState(false);
   const [showMoreClues, setShowMoreClues] = useState(false);
 
-  const definitionService = useMemo(() => new SimpleDefinitionService(), []);
+  const definitionService = useMemo(() => new EnhancedDefinitionService(dictionaryService), []);
 
   // Memoize expensive calculations
   const letterCountGrid = useMemo(() => 
