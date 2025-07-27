@@ -122,9 +122,9 @@ export default function HowToPlayModal({
                       <span className="text-white">Pangrams (all 7 letters)</span>
                       <span className="text-[#4ADE80] font-bold">+10 bonus points</span>
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-[#2D5A27] rounded border border-blue-600">
+                    <div className="flex items-center justify-between p-2 bg-[#2D5A27] rounded border border-yellow-600">
                       <span className="text-white">Bingo (found a word starting with each letter)</span>
-                      <span className="text-[#60A5FA] font-bold">+10 bonus points</span>
+                      <span className="text-[#fbbf24] font-bold">+10 bonus points</span>
                     </div>
                   </div>
                   
@@ -137,9 +137,12 @@ export default function HowToPlayModal({
                     </div>
                   </div>
                   
-                  <div className="mt-3 p-3 bg-blue-900/20 rounded text-sm border border-blue-600/30">
-                    <p className="text-blue-200">
-                      <strong>Pangrams and Bingo:</strong> Look for emojis in the top left to see if today&apos;s puzzle has pangrams or a bingo!
+                  <div className="mt-3 p-3 bg-yellow-900/20 rounded text-sm border border-yellow-600/30">
+                    <p className="text-yellow-200 mb-2">
+                      <strong>Bingo Bonus:</strong> Look for the 🪴 emoji in the top left to see if today&apos;s puzzle has a bingo available!
+                    </p>
+                    <p className="text-yellow-200">
+                      <strong>Visual Tracking:</strong> Letter tiles start dim and brighten once you find a word starting with each letter.
                     </p>
                   </div>
                 </div>
@@ -162,11 +165,15 @@ export default function HowToPlayModal({
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Center letter (green):</strong> Must be included in every word you submit</span>
+                        <span><strong className="text-white">Center letter (yellow):</strong> Must be included in every word you submit</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
                         <span><strong className="text-white">Word input:</strong> Your current word appears in the text field above the grid</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Bingo tracking:</strong> When a bingo is available, letters start dim and brighten when you find a word starting with that letter</span>
                       </div>
                     </div>
                   </div>
@@ -227,7 +234,7 @@ export default function HowToPlayModal({
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Info icon (ⓘ):</strong> Shows if puzzle has pangrams or bingo bonuses available</span>
+                        <span><strong className="text-white">Info area (ⓘ):</strong> Shows if puzzle has pangrams 🌱 or bingo 🪴 bonuses available</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
