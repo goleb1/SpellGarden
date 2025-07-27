@@ -4,13 +4,11 @@ import { IoClose } from 'react-icons/io5';
 interface HowToPlayModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isFirstTime?: boolean;
 }
 
 export default function HowToPlayModal({
   isOpen,
   onClose,
-  isFirstTime = false,
 }: HowToPlayModalProps) {
   return (
     <AnimatePresence>
@@ -36,13 +34,8 @@ export default function HowToPlayModal({
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-xl sm:text-2xl font-semibold text-white">
-                  {isFirstTime ? 'Welcome to SpellGarden! 🌸' : 'How to Play'}
+                  How to Play
                 </h2>
-                {isFirstTime && (
-                  <p className="text-sm text-gray-400 mt-1">
-                    Let&apos;s learn how to play this word puzzle game
-                  </p>
-                )}
               </div>
               <button
                 onClick={onClose}
@@ -229,7 +222,7 @@ export default function HowToPlayModal({
                 onClick={onClose}
                 className="w-full bg-[#2D5A27] hover:bg-[#3D6A37] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
               >
-                {isFirstTime ? "Start Playing! 🌸" : "Got it!"}
+Got it!
               </button>
             </div>
           </motion.div>
