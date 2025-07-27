@@ -145,105 +145,39 @@ export default function HowToPlayModal({
                 </div>
               </div>
 
-              {/* Game Features Section */}
+              {/* Playing the Game Section */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  ⚡ Game Features
-                </h3>
-                <div className="bg-[#142911] rounded-lg p-4 border border-[#2D5A27] space-y-3">
-                  <div className="grid gap-3">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg">📊</span>
-                      <div>
-                        <strong className="text-white">Level Progression:</strong>
-                        <p className="text-gray-300 text-sm">Advance through levels (Seedling 🌱 → Botanist 🌳) based on your score</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg">🔀</span>
-                      <div>
-                        <strong className="text-white">Shuffle Letters:</strong>
-                        <p className="text-gray-300 text-sm">Click the shuffle button to rearrange letters when you&apos;re stuck</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg">⌨️</span>
-                      <div>
-                        <strong className="text-white">Multiple Input Methods:</strong>
-                        <p className="text-gray-300 text-sm">Type on your keyboard or click letters on the grid</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg">🗂️</span>
-                      <div>
-                        <strong className="text-white">Word Organization:</strong>
-                        <p className="text-gray-300 text-sm">Found words can be arranged alphabetically, length-wise, or in order of discovery</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* UI Guide Section */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  🖱️ Interface Guide
+                  🎮 Playing the Game
                 </h3>
                 <div className="bg-[#142911] rounded-lg p-4 border border-[#2D5A27] space-y-4">
                   
-                  {/* Header Area */}
+                  {/* Input & Controls */}
                   <div>
-                    <h4 className="text-white font-semibold mb-2">📍 Header Area</h4>
+                    <h4 className="text-white font-semibold mb-2">⌨️ Creating Words</h4>
                     <div className="space-y-2 text-gray-300 text-sm ml-4">
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Hamburger menu (☰):</strong> Access hints, yesterday&apos;s puzzle, and this guide</span>
+                        <span><strong className="text-white">Input methods:</strong> Type on keyboard or click letters in the hexagon grid</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Info icon (ⓘ):</strong> Shows puzzle bonuses (🪴 bingo, 🌱 pangrams available)</span>
+                        <span><strong className="text-white">Center letter (green):</strong> Must be included in every word you submit</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Progress bar:</strong> Shows your current level and progress to next rank</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Levels:</strong> Click the progress bar to see your level progress and score needed for eachrank</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Game Area */}
-                  <div>
-                    <h4 className="text-white font-semibold mb-2">🎮 Game Area</h4>
-                    <div className="space-y-2 text-gray-300 text-sm ml-4">
-                      <div className="flex items-start gap-2">
-                        <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Text input field:</strong> Shows your current word as you type/click letters</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Hexagon grid:</strong> Click letters or use keyboard to build words</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Center letter (green):</strong> Must be included in every word</span>
+                        <span><strong className="text-white">Word input:</strong> Your current word appears in the text field above the grid</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Control Buttons */}
                   <div>
-                    <h4 className="text-white font-semibold mb-2">🔧 Control Buttons</h4>
+                    <h4 className="text-white font-semibold mb-2">🔧 Game Controls</h4>
                     <div className="space-y-2 text-gray-300 text-sm ml-4">
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Sort:</strong> Organize found words by time (⏪), alphabet (🔤), or length (📶)</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Shuffle:</strong> Rearrange the outer letters for a fresh perspective</span>
+                        <span><strong className="text-white">Enter:</strong> Submit your word (or press Enter key)</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
@@ -251,14 +185,18 @@ export default function HowToPlayModal({
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
-                        <span><strong className="text-white">Enter:</strong> Submit your word (or press Enter key)</span>
+                        <span><strong className="text-white">Shuffle:</strong> Rearrange the outer letters for a fresh perspective</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Sort:</strong> Organize found words by time (⏪), alphabet (🔤), or length (📶)</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Found Words */}
+                  {/* Found Words & Progress */}
                   <div>
-                    <h4 className="text-white font-semibold mb-2">📝 Found Words Area</h4>
+                    <h4 className="text-white font-semibold mb-2">📊 Progress & Results</h4>
                     <div className="space-y-2 text-gray-300 text-sm ml-4">
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
@@ -271,6 +209,29 @@ export default function HowToPlayModal({
                       <div className="flex items-start gap-2">
                         <span className="text-[#4ADE80] mt-1">•</span>
                         <span><strong className="text-white">Click any word:</strong> View definition and pronunciation</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Progress bar:</strong> Shows your level (Seedling 🌱 → Botanist 🌳) and score progress</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu & Features */}
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">🔍 Additional Features</h4>
+                    <div className="space-y-2 text-gray-300 text-sm ml-4">
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Hamburger menu (☰):</strong> Access hints, yesterday&apos;s puzzle, and this guide</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Info icon (ⓘ):</strong> Shows if puzzle has pangrams or bingo bonuses available</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-[#4ADE80] mt-1">•</span>
+                        <span><strong className="text-white">Score display:</strong> Your total points for today&apos;s puzzle</span>
                       </div>
                     </div>
                   </div>
