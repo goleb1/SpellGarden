@@ -8,6 +8,8 @@ import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import WordDefinitionModal from '@/components/WordDefinitionModal';
+import HintsModal from '@/components/HintsModal';
+import HowToPlayModal from '@/components/HowToPlayModal';
 import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
 import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -31,6 +33,8 @@ export default function Home() {
   const [yesterdaysPuzzle, setYesterdaysPuzzle] = useState<YesterdaysPuzzleData | null>(null);
   const [selectedWord, setSelectedWord] = useState<string>('');
   const [isWordDefinitionModalOpen, setIsWordDefinitionModalOpen] = useState(false);
+  const [isHintsModalOpen, setIsHintsModalOpen] = useState(false);
+  const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
 
   const initialGameState = getInitialGameState();
   const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
@@ -65,6 +69,7 @@ export default function Home() {
       date: yesterday
     });
   }, []);
+
 
   const handleLetterClick = (letter: string) => {
     setCurrentWord(prev => prev + letter);
@@ -121,6 +126,14 @@ export default function Home() {
   const handleWordClick = (word: string) => {
     setSelectedWord(word);
     setIsWordDefinitionModalOpen(true);
+  };
+
+  const handleCloseHowToPlay = () => {
+    setIsHowToPlayModalOpen(false);
+  };
+
+  const handleShowHowToPlay = () => {
+    setIsHowToPlayModalOpen(true);
   };
 
   const handleSubmit = async () => {
@@ -215,6 +228,8 @@ export default function Home() {
             <div className="flex items-center">
               <Menu 
                 onShowYesterdaysPuzzle={() => setIsYesterdaysPuzzleModalOpen(true)}
+                onShowHints={() => setIsHintsModalOpen(true)}
+                onShowHowToPlay={handleShowHowToPlay}
                 timeToNextPuzzle={timeToNextPuzzle}
               />
               <h1 className="text-2xl font-bold">SpellGarden</h1>
@@ -446,6 +461,22 @@ export default function Home() {
           onClose={() => setIsWordDefinitionModalOpen(false)}
           word={selectedWord}
           isPangram={gameState?.pangrams.includes(selectedWord) || false}
+        />
+
+        {gameState && (
+          <HintsModal
+            isOpen={isHintsModalOpen}
+            onClose={() => setIsHintsModalOpen(false)}
+            validWords={gameState.validWords}
+            foundWords={gameState.foundWords}
+            centerLetter={gameState.centerLetter}
+            outerLetters={gameState.letters}
+          />
+        )}
+
+        <HowToPlayModal
+          isOpen={isHowToPlayModalOpen}
+          onClose={handleCloseHowToPlay}
         />
       </main>
     </>
