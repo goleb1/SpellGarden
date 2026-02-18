@@ -198,8 +198,10 @@ export default function YesterdaysPuzzleModal({
                         <div
                           key={word}
                           className={`px-2.5 py-1 rounded-full text-white text-sm ${
-                            isFound ? 'bg-[#2D5A27]' : 'bg-[#333333]'
-                          } ${isPangram ? 'border border-green-600' : ''}`}
+                            isPangram
+                              ? (isFound ? 'bg-gradient-to-r from-rose-500/80 to-pink-500/80 shadow-lg shadow-rose-500/20 font-semibold' : 'bg-[#333333] border border-pink-500')
+                              : (isFound ? 'bg-[#2D5A27]' : 'bg-[#333333]')
+                          }`}
                         >
                           {word.toUpperCase()}
                         </div>
