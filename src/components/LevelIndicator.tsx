@@ -19,16 +19,22 @@ export const LEVELS: Level[] = [
   { name: 'Botanist', emoji: '👩‍🌾', threshold: 0.7 },
 ];
 
+export const MOTHER_EARTH = { name: 'Mother Earth', emoji: '🌍' };
+const BOTANIST_THRESHOLD = LEVELS[LEVELS.length - 1].threshold;
+
 interface LevelIndicatorProps {
   score: number;
   totalPossibleScore: number;
+  foundWordsCount: number;
+  totalWords: number;
 }
 
-export default function LevelIndicator({ score, totalPossibleScore }: LevelIndicatorProps) {
+export default function LevelIndicator({ score, totalPossibleScore, foundWordsCount, totalWords }: LevelIndicatorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const progress = score / totalPossibleScore;
   const [prevLevel, setPrevLevel] = useState<Level | null>(null);
   const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false);
+  const [prevIsMotherEarth, setPrevIsMotherEarth] = useState(false);
   
   const currentLevel = useMemo(() => {
     // Find the highest level whose threshold we've passed
@@ -48,6 +54,28 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
     }
     setPrevLevel(currentLevel);
   }, [currentLevel, prevLevel]);
+
+  const isMotherEarth = totalWords > 0 && foundWordsCount === totalWords;
+  const showCountdown = !isMotherEarth && score > BOTANIST_THRESHOLD * totalPossibleScore;
+  const wordsLeft = totalWords - foundWordsCount;
+
+  const displayEmoji = isMotherEarth ? MOTHER_EARTH.emoji : currentLevel.emoji;
+  const displayName = isMotherEarth
+    ? MOTHER_EARTH.name
+    : showCountdown
+      ? `Botanist · ${wordsLeft} left`
+      : currentLevel.name;
+
+  useEffect(() => {
+    if (isMotherEarth && !prevIsMotherEarth) {
+      setShowLevelUpAnimation(true);
+      const timer = setTimeout(() => setShowLevelUpAnimation(false), 1500);
+      setPrevIsMotherEarth(true);
+      return () => clearTimeout(timer);
+    } else if (!isMotherEarth) {
+      setPrevIsMotherEarth(false);
+    }
+  }, [isMotherEarth, prevIsMotherEarth]);
 
   const nextLevel = useMemo(() => {
     const currentIndex = LEVELS.findIndex(level => level.name === currentLevel.name);
@@ -80,7 +108,7 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
         >
           <div className="relative z-10 flex items-center gap-2 text-sm font-medium w-full justify-center">
             <motion.span
-              key={currentLevel.emoji}
+              key={displayEmoji}
               initial={{ scale: 1 }}
               animate={showLevelUpAnimation ? {
                 scale: [1, 1.4, 1],
@@ -88,18 +116,18 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
               } : {}}
               transition={{ duration: 0.5 }}
             >
-              {currentLevel.emoji}
+              {displayEmoji}
             </motion.span>
             <AnimatePresence mode="wait">
               <motion.span
-                key={currentLevel.name}
+                key={displayName}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
                 className="text-sm"
               >
-                {currentLevel.name}
+                {displayName}
               </motion.span>
             </AnimatePresence>
           </div>
@@ -125,6 +153,8 @@ export default function LevelIndicator({ score, totalPossibleScore }: LevelIndic
         onClose={() => setIsModalOpen(false)}
         score={score}
         totalPossibleScore={totalPossibleScore}
+        foundWordsCount={foundWordsCount}
+        totalWords={totalWords}
       />
     </>
   );

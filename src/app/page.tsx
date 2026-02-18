@@ -252,9 +252,11 @@ export default function Home() {
 
           {/* Level indicator row */}
           <div className="flex items-center justify-center sm:justify-start gap-4 w-full sm:w-auto">
-            <LevelIndicator 
-              score={gameState.score} 
+            <LevelIndicator
+              score={gameState.score}
               totalPossibleScore={gameState.totalPossibleScore}
+              foundWordsCount={gameState.foundWords.length}
+              totalWords={gameState.validWords.length}
             />
             {/* Score - visible on desktop only next to level indicator */}
             <div className="hidden sm:block text-2xl font-bold min-w-[3ch] text-right">
