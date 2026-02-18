@@ -220,7 +220,7 @@ export default function PuzzleInfo({
       )}
       
       <div ref={pangramRef} className="flex gap-0.5">
-        {Array.from({ length: Math.min(pangramCount, 3) }).map((_, index) => (
+        {Array.from({ length: pangramCount }).map((_, index) => (
           <PangramIndicator
             key={index}
             index={index}
