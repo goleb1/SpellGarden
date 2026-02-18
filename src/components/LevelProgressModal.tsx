@@ -88,7 +88,7 @@ export default function LevelProgressModal({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-full max-w-[400px] min-w-[280px] mx-4 p-6 border border-[#2D5A27] overflow-hidden"
+            className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-full max-w-[400px] min-w-[280px] mx-4 p-6 border border-[#2D5A27]"
           >
             {/* Close button */}
             <button
