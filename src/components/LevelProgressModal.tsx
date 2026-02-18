@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { LEVELS, Level } from './LevelIndicator';
+import { LEVELS, Level, MOTHER_EARTH } from './LevelIndicator';
 import { IoClose } from 'react-icons/io5';
 
 interface LevelProgressModalProps {
@@ -7,6 +7,8 @@ interface LevelProgressModalProps {
   onClose: () => void;
   score: number;
   totalPossibleScore: number;
+  foundWordsCount: number;
+  totalWords: number;
 }
 
 export default function LevelProgressModal({
@@ -14,8 +16,11 @@ export default function LevelProgressModal({
   onClose,
   score,
   totalPossibleScore,
+  foundWordsCount,
+  totalWords,
 }: LevelProgressModalProps) {
   const progress = score / totalPossibleScore;
+  const isMotherEarth = totalWords > 0 && foundWordsCount === totalWords;
   
   // Find current level
   const currentLevel = LEVELS.reduce((prev: Level, curr: Level) => {
@@ -25,6 +30,8 @@ export default function LevelProgressModal({
 
   // Calculate the progress line height based on current progress between levels
   const calculateProgressHeight = () => {
+    if (isMotherEarth) return 100;
+
     const SEGMENT_HEIGHT = 100 / 7; // Height per segment with 7 gaps between 8 levels
     
     // If we haven't reached Sprout yet
@@ -107,10 +114,30 @@ export default function LevelProgressModal({
                 />
               </div>
 
+              {/* Mother Earth — only shown when all words are found */}
+              {isMotherEarth && (
+                <div className="relative">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 bg-[#142911] border-[#2D5A27] relative z-10 ring-2 ring-[#2D5A27] ring-offset-2 ring-offset-[#1C1C1E]">
+                      <span className="text-lg">{MOTHER_EARTH.emoji}</span>
+                    </div>
+                    <div className="flex-1 relative z-10">
+                      <div className="flex items-center justify-between relative">
+                        <div className="absolute top-0 left-0 right-0 h-[1px] bg-[#2D5A27] -translate-y-1" />
+                        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#2D5A27] translate-y-1" />
+                        <span className="font-medium text-white py-2">{MOTHER_EARTH.name}</span>
+                        <span className="font-bold text-white py-2">{score}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {[...LEVELS].reverse().map((level, index, array) => {
                 const reversedIndex = array.length - 1 - index;
                 const isCompleted = progress >= level.threshold;
-                const isCurrent = level.name === currentLevel.name;
+                // When Mother Earth is earned, no regular level is "current"
+                const isCurrent = !isMotherEarth && level.name === currentLevel.name;
                 const pointsAway = getPointsAway(level.threshold);
                 const nextLevel = LEVELS[reversedIndex + 1];
 
