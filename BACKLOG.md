@@ -5,32 +5,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 1. Firebase Cleanup (All in one file, do together)
-
-### Remove debug `console.log` of Firebase config
-- **File:** `src/lib/firebase/firebase.ts` (lines 31-35)
-- **What:** Every page load logs `authDomain`, `projectId`, and `storageBucket` to the browser console. Not a security risk but unnecessary noise in production.
-- **Fix:** Remove entirely, or wrap in `if (process.env.NODE_ENV === 'development')`.
-- **Priority:** Low — cosmetic.
-- **Spotted:** Code review, Feb 2026
-
-### Suppress missing env var errors during static pre-render
-- **File:** `src/lib/firebase/firebase.ts` (lines 6-19)
-- **What:** On every page load, the browser console shows red errors for all `NEXT_PUBLIC_FIREBASE_*` env vars being missing. This fires during Next.js's server-side static render before the browser environment is available. Firebase initializes successfully anyway — it's just noisy red errors that can mask real issues.
-- **Fix:** Add a `typeof window === 'undefined'` guard around the env var checks so they only run client-side.
-- **Priority:** Low — cosmetic, no functional impact.
-- **Spotted:** Browser devtools console, Feb 2026
-
-### Migrate Firestore persistence from `enableIndexedDbPersistence()` to `FirestoreSettings.cache`
-- **File:** `src/lib/firebase/firebase.ts` (lines 55-65)
-- **What:** `enableIndexedDbPersistence()` is deprecated in Firestore 10.x and will eventually be removed. Logs a deprecation warning on every page load.
-- **Fix:** Replace with the new `cache` option in `initializeFirestore()` settings: `{ cache: persistentLocalCache() }`.
-- **Priority:** Low — still works today, but should be done before a future Firebase version removes it.
-- **Spotted:** Browser devtools console, Feb 2026
-
----
-
-## 2. UX & Error Handling
+## 1. UX & Error Handling
 
 ### Show user-facing error when game state fails to load/save
 - **File:** `src/app/page.tsx` (line 40) and `src/lib/hooks/useGameState.ts`
@@ -41,7 +16,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 3. Code Quality & Refactoring
+## 2. Code Quality & Refactoring
 
 ### Extract duplicate found-words list into a shared component
 - **File:** `src/app/page.tsx` (lines ~351-390 and ~403-441)
@@ -73,7 +48,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 4. Performance (More involved, investigate first)
+## 3. Performance (More involved, investigate first)
 
 ### Reduce unused JavaScript (~83 KiB / ~450ms savings)
 - **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load.
@@ -83,7 +58,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 5. Major Upgrades (Plan carefully, do last)
+## 4. Major Upgrades (Plan carefully, do last)
 
 ### Update Next.js to address high-severity DoS vulnerabilities
 - **What:** The current Next.js 14.x has two high-severity CVEs: DoS via Image Optimizer `remotePatterns` misconfiguration and HTTP request deserialization via insecure React Server Components.
