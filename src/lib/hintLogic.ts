@@ -14,12 +14,13 @@ export interface TwoLetterHints {
 export interface WordClue {
   wordLength: number;
   firstLetter: string;
-  definition: string;
+  hintPhrase: string;      // Tap 2: fill-in-the-blank or thematic phrase
+  definition: string;      // Tap 3: full definition
   partOfSpeech?: string;
 }
 
 export function generateLetterCountGrid(
-  validWords: string[], 
+  validWords: string[],
   foundWords: string[]
 ): LetterCountGrid {
   const unfoundWords = validWords.filter(word => !foundWords.includes(word.toLowerCase()));
@@ -44,7 +45,7 @@ export function generateLetterCountGrid(
 }
 
 export function generateTwoLetterHints(
-  validWords: string[], 
+  validWords: string[],
   foundWords: string[]
 ): TwoLetterHints {
   const unfoundWords = validWords.filter(word => !foundWords.includes(word.toLowerCase()));
@@ -76,16 +77,16 @@ export class EnhancedDefinitionService {
     // Remove the word itself from the definition to avoid giving it away
     const wordLower = word.toLowerCase();
     let hint = definition.toLowerCase();
-    
+
     // Remove the word and its variations from the hint
     hint = hint.replace(new RegExp(`\\b${wordLower}\\b`, 'gi'), 'this word');
     hint = hint.replace(new RegExp(`\\b${wordLower}s\\b`, 'gi'), 'this word');
     hint = hint.replace(new RegExp(`\\b${wordLower}ing\\b`, 'gi'), 'this word');
     hint = hint.replace(new RegExp(`\\b${wordLower}ed\\b`, 'gi'), 'this word');
-    
+
     // Clean up any double spaces
     hint = hint.replace(/\s+/g, ' ');
-    
+
     // Remove any remaining instances of the word (partial matches)
     const wordParts = wordLower.split('');
     for (let i = 0; i < wordParts.length - 1; i++) {
@@ -94,20 +95,60 @@ export class EnhancedDefinitionService {
         hint = hint.replace(new RegExp(part, 'gi'), '...');
       }
     }
-    
+
     // Clean up any awkward phrasing
     hint = hint.replace(/\s*\.{3,}\s*/g, '... ');
     hint = hint.replace(/\s+/g, ' ');
-    
+
     // Capitalize first letter
     hint = hint.charAt(0).toUpperCase() + hint.slice(1);
-    
+
     // If the hint is too short or unclear, add some context
     if (hint.length < 20 || hint.includes('this word') && hint.length < 30) {
       hint = `A word meaning: ${hint}`;
     }
-    
+
     return hint;
+  }
+
+  // Generate a fill-in-the-blank sentence from an example, or a thematic phrase from the definition
+  private generateHintPhrase(word: string, definition: string, example?: string): string {
+    const wordLower = word.toLowerCase();
+
+    // Prefer fill-in-the-blank from an example sentence
+    if (example && example.trim().length > 0) {
+      let blank = example;
+      // Replace the word and its common inflections with blanks
+      blank = blank.replace(new RegExp(`\\b${wordLower}s?\\b`, 'gi'), '_____');
+      blank = blank.replace(new RegExp(`\\b${wordLower}ed\\b`, 'gi'), '_____');
+      blank = blank.replace(new RegExp(`\\b${wordLower}ing\\b`, 'gi'), '_____');
+      blank = blank.replace(/\s+/g, ' ').trim();
+      // Only use it if the blank was actually inserted (i.e. the word appeared)
+      if (blank.includes('_____')) {
+        // Capitalize first letter
+        return blank.charAt(0).toUpperCase() + blank.slice(1);
+      }
+    }
+
+    // Fallback: extract first clause of definition as a thematic phrase
+    let phrase = definition.toLowerCase();
+
+    // Remove the word itself
+    phrase = phrase.replace(new RegExp(`\\b${wordLower}\\b`, 'gi'), '');
+    phrase = phrase.replace(/\s+/g, ' ').trim();
+
+    // Take up to the first comma or ~7 words, whichever is shorter
+    const upToComma = phrase.split(',')[0].trim();
+    const words = upToComma.split(/\s+/).slice(0, 7).join(' ');
+    const excerpt = words.replace(/[.;:]+$/, '').trim();
+
+    if (excerpt.length >= 8) {
+      const capitalized = excerpt.charAt(0).toUpperCase() + excerpt.slice(1);
+      return `Think of something related to: ${capitalized}`;
+    }
+
+    // Last resort: pattern hint
+    return this.generatePatternHint(word);
   }
 
   // Generate a hint based on word characteristics when no definition is available
@@ -166,36 +207,41 @@ export class EnhancedDefinitionService {
     }
   }
 
-  async getDefinition(word: string): Promise<{ definition: string; partOfSpeech?: string } | null> {
+  async getDefinition(word: string): Promise<{ definition: string; hintPhrase: string; partOfSpeech?: string } | null> {
     try {
       // Try to get the real definition from the dictionary API
       const definitionData = await this.dictionaryService.getDefinition(word);
-      
+
       if (definitionData && definitionData.meanings && definitionData.meanings.length > 0) {
         // Use the first definition from the first meaning
         const firstMeaning = definitionData.meanings[0];
         const firstDefinition = firstMeaning.definitions[0];
-        
+
         if (firstDefinition && firstDefinition.definition) {
+          const definition = this.createHintFromDefinition(firstDefinition.definition, word);
+          const hintPhrase = this.generateHintPhrase(word, firstDefinition.definition, firstDefinition.example);
           return {
-            definition: this.createHintFromDefinition(firstDefinition.definition, word),
+            definition,
+            hintPhrase,
             partOfSpeech: firstMeaning.partOfSpeech
           };
         }
       }
-      
+
       // If no definition found, fall back to pattern-based hints
       return {
         definition: this.generatePatternHint(word),
+        hintPhrase: this.generatePatternHint(word),
         partOfSpeech: this.detectPartOfSpeech(word)
       };
-      
+
     } catch (error) {
       console.warn(`Failed to get definition for word: ${word}`, error);
-      
+
       // Fall back to pattern-based hints
       return {
         definition: this.generatePatternHint(word),
+        hintPhrase: this.generatePatternHint(word),
         partOfSpeech: this.detectPartOfSpeech(word)
       };
     }
@@ -204,14 +250,14 @@ export class EnhancedDefinitionService {
   // Detect part of speech based on word endings and patterns
   private detectPartOfSpeech(word: string): string | undefined {
     const wordLower = word.toLowerCase();
-    
+
     // Verb endings
     if (wordLower.endsWith('ed')) return 'verb';
     if (wordLower.endsWith('ing')) return 'verb';
     if (wordLower.endsWith('ize') || wordLower.endsWith('ise')) return 'verb';
     if (wordLower.endsWith('ate')) return 'verb';
     if (wordLower.endsWith('ify')) return 'verb';
-    
+
     // Adjective endings
     if (wordLower.endsWith('able') || wordLower.endsWith('ible')) return 'adjective';
     if (wordLower.endsWith('al')) return 'adjective';
@@ -221,10 +267,10 @@ export class EnhancedDefinitionService {
     if (wordLower.endsWith('less')) return 'adjective';
     if (wordLower.endsWith('ive')) return 'adjective';
     if (wordLower.endsWith('y')) return 'adjective';
-    
+
     // Adverb endings
     if (wordLower.endsWith('ly')) return 'adverb';
-    
+
     // Noun endings
     if (wordLower.endsWith('tion') || wordLower.endsWith('sion')) return 'noun';
     if (wordLower.endsWith('ment')) return 'noun';
@@ -234,51 +280,48 @@ export class EnhancedDefinitionService {
     if (wordLower.endsWith('or')) return 'noun';
     if (wordLower.endsWith('ist')) return 'noun';
     if (wordLower.endsWith('ism')) return 'noun';
-    
+
     // Plural forms
     if (wordLower.endsWith('s') && !wordLower.endsWith('ss')) return 'noun';
-    
+
     return undefined; // Don't show "unknown", just omit it
   }
 }
 
 export async function generateWordClues(
-  validWords: string[], 
+  validWords: string[],
   foundWords: string[],
-  definitionService: EnhancedDefinitionService,
-  maxClues: number = 15
+  definitionService: EnhancedDefinitionService
 ): Promise<WordClue[]> {
   const unfoundWords = validWords.filter(word => !foundWords.includes(word.toLowerCase()));
-  
-  // Sort by length descending to prioritize longer words
-  const sortedUnfoundWords = unfoundWords.sort((a, b) => b.length - a.length);
-  
-  // Take up to maxClues words
-  const wordsToProcess = sortedUnfoundWords.slice(0, maxClues);
-  
+
+  // Sort by length ascending — shorter (easier) words first
+  const sortedUnfoundWords = unfoundWords.sort((a, b) => a.length - b.length);
+
   const clues: WordClue[] = [];
-  
-  for (const word of wordsToProcess) {
+
+  for (const word of sortedUnfoundWords) {
     try {
       const definitionData = await definitionService.getDefinition(word);
       if (definitionData) {
         clues.push({
           wordLength: word.length,
           firstLetter: word.charAt(0).toUpperCase(),
+          hintPhrase: definitionData.hintPhrase,
           definition: definitionData.definition,
           partOfSpeech: definitionData.partOfSpeech
         });
       }
     } catch (error) {
       console.warn(`Failed to get definition for word: ${word}`, error);
-      // Add a generic clue even if definition lookup fails
       clues.push({
         wordLength: word.length,
         firstLetter: word.charAt(0).toUpperCase(),
+        hintPhrase: `A ${word.length}-letter word`,
         definition: `A ${word.length}-letter word starting with ${word.charAt(0).toUpperCase()}`
       });
     }
   }
-  
+
   return clues;
 }

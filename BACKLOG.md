@@ -5,7 +5,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 1. Performance (More involved, investigate first)
+## Performance (More involved, investigate first)
 
 ### Reduce unused JavaScript (~83 KiB / ~450ms savings)
 - **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load.
@@ -15,7 +15,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 2. Major Upgrades (Plan carefully, do last)
+## Major Upgrades (Plan carefully, do last)
 
 ### Update Next.js to address high-severity DoS vulnerabilities
 - **What:** The current Next.js 14.x has two high-severity CVEs: DoS via Image Optimizer `remotePatterns` misconfiguration and HTTP request deserialization via insecure React Server Components.
