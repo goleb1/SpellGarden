@@ -41,20 +41,7 @@ Based on analysis of the current codebase and game mechanics, here are 10 featur
 
 ---
 
-## 4. Progressive Word Reveal
-**Description**: Gradually reveal letters of unfound words as hints, starting with harder/longer words first.
-
-**Implementation**:
-- Algorithm to determine word difficulty (length, common letters)
-- Reveal system showing partial words with blanks
-- Unlock reveals based on current score percentage
-- Toggle between reveal modes
-
-**Value**: Helps players discover words they wouldn't find otherwise
-
----
-
-## 5. Puzzle Archive & Statistics
+## 4. Puzzle Archive & Statistics
 **Description**: Access to previous puzzles with detailed personal statistics (average score, completion rate, favorite word lengths).
 
 **Implementation**:
@@ -64,17 +51,3 @@ Based on analysis of the current codebase and game mechanics, here are 10 featur
 - Export statistics as shareable images
 
 **Value**: Data-driven insights motivate improvement and provide long-term engagement
-
----
-
-## 6. Dark/Light Theme Toggle
-**Description**: Add theme customization options including light mode, high contrast, and seasonal themes.
-
-**Implementation**:
-- Theme context provider with Tailwind CSS custom properties
-- Theme selector in settings menu
-- Persist theme preference
-- Seasonal themes (spring garden, winter garden, etc.)
-- Accessibility-focused high contrast option
-
-**Value**: Personalization and accessibility improvements for different lighting conditions and preferences
