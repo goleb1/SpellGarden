@@ -5,18 +5,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 1. UX & Error Handling
-
-### Show user-facing error when game state fails to load/save
-- **File:** `src/app/page.tsx` (line 40) and `src/lib/hooks/useGameState.ts`
-- **What:** `stateError` is returned from `useGameState` but never consumed in `page.tsx`. If Firestore fails, the error is silently swallowed with no message shown to the player — they'd just see a broken game with no explanation.
-- **Fix:** Display a toast or inline banner when `stateError` is non-null.
-- **Priority:** Low-Medium — rare failure case, but confusing when it does happen.
-- **Spotted:** Code review, Feb 2026
-
----
-
-## 2. Code Quality & Refactoring
+## 1. Code Quality & Refactoring
 
 ### Extract duplicate found-words list into a shared component
 - **File:** `src/app/page.tsx` (lines ~351-390 and ~403-441)
@@ -48,7 +37,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 3. Performance (More involved, investigate first)
+## 2. Performance (More involved, investigate first)
 
 ### Reduce unused JavaScript (~83 KiB / ~450ms savings)
 - **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load.
@@ -58,7 +47,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 4. Major Upgrades (Plan carefully, do last)
+## 3. Major Upgrades (Plan carefully, do last)
 
 ### Update Next.js to address high-severity DoS vulnerabilities
 - **What:** The current Next.js 14.x has two high-severity CVEs: DoS via Image Optimizer `remotePatterns` misconfiguration and HTTP request deserialization via insecure React Server Components.

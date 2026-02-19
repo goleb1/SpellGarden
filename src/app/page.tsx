@@ -39,6 +39,12 @@ export default function Home() {
   const initialGameState = getInitialGameState();
   const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
 
+  useEffect(() => {
+    if (stateError) {
+      setMessage({ text: stateError, type: 'error' });
+    }
+  }, [stateError]);
+
   // Update countdown timer
   useEffect(() => {
     const updateTimer = () => {
