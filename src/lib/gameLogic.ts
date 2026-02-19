@@ -18,24 +18,6 @@ export const calculateWordScore = (word: string): number => {
   return word.length;
 };
 
-export const isValidWord = async (word: string, gameState: GameState): Promise<boolean> => {
-  // Word must be at least 4 letters
-  if (word.length < 4) return false;
-
-  // Word must contain center letter
-  if (!word.includes(gameState.centerLetter.toLowerCase())) return false;
-
-  // Word can only contain game letters
-  const validLetters = [gameState.centerLetter, ...gameState.letters];
-  const hasValidLetters = word.split('').every(letter => 
-    validLetters.includes(letter.toUpperCase())
-  );
-  
-  if (!hasValidLetters) return false;
-
-  // Word must be in the puzzle's valid words list
-  return gameState.validWords.includes(word.toLowerCase());
-};
 
 export const submitWord = async (
   word: string, 

@@ -23,7 +23,7 @@ interface YesterdaysPuzzleData extends ReturnType<typeof getPuzzleForDate> {
 }
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [currentWord, setCurrentWord] = useState('');
   const [message, setMessage] = useState<{text: string; type: 'error' | 'success'} | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);

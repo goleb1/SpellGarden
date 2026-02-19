@@ -5,53 +5,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 1. Dead Code Removal (Safe deletes, isolated files)
-
-### Delete unused file: `firebaseUtils.ts`
-- **File:** `src/lib/firebase/firebaseUtils.ts`
-- **What:** This entire file is never imported anywhere. It contains Firebase utility functions (`logoutUser`, `signInWithGoogle`, `addDocument`, `getDocuments`, `updateDocument`, `deleteDocument`, `uploadFile`) that duplicate functionality already handled elsewhere. It's a leftover from an earlier version of the app.
-- **Fix:** Delete the file. Confirm nothing imports it first with a project-wide search for `firebaseUtils`.
-- **Priority:** Low — no functional impact, just clutter.
-- **Spotted:** Dead code audit, Feb 2026
-
-### Delete unused component: `SignInWithGoogle.tsx`
-- **File:** `src/components/SignInWithGoogle.tsx`
-- **What:** This component is never imported or used anywhere. Sign-in was moved into `Menu.tsx` at some point and this got left behind.
-- **Fix:** Delete the file. Confirm nothing imports it first.
-- **Priority:** Low — no functional impact, just clutter.
-- **Spotted:** Dead code audit, Feb 2026
-
-### Remove unused `isValidWord` export from `gameLogic.ts`
-- **File:** `src/lib/gameLogic.ts` (lines 21-38)
-- **What:** `isValidWord` is exported but never imported or called anywhere. All validation logic is handled inline inside `submitWord`.
-- **Fix:** Delete the `isValidWord` function.
-- **Priority:** Low — dead code, no impact.
-- **Spotted:** Dead code audit, Feb 2026
-
-### Remove unused tutorial functions from `userPreferences.ts`
-- **File:** `src/lib/userPreferences.ts` (lines ~91-147)
-- **What:** Four exported functions — `isFirstTimeUser`, `markTutorialSeen`, `resetTutorialStatus`, and `debugStatus` — are never called anywhere. Looks like a tutorial/onboarding feature that was removed or never shipped.
-- **Fix:** Delete these four functions. If the tutorial is planned for the future, note that here before deleting.
-- **Priority:** Low — dead code, no impact.
-- **Spotted:** Dead code audit, Feb 2026
-
-### Remove unused `clearCache` and `getCacheSize` from `dictionaryService.ts`
-- **File:** `src/lib/dictionaryService.ts` (lines ~78-84)
-- **What:** Two public methods on the `DictionaryService` class that are never called externally.
-- **Fix:** Delete both methods.
-- **Priority:** Very low — minor clutter.
-- **Spotted:** Dead code audit, Feb 2026
-
-### Remove unused `signOut` destructure in `page.tsx`
-- **File:** `src/app/page.tsx` (line 26)
-- **What:** `signOut` is destructured from `useAuth()` but never referenced in the component.
-- **Fix:** Remove `signOut` from the destructure: change to `const { user } = useAuth();`
-- **Priority:** Very low — minor clutter.
-- **Spotted:** Dead code audit, Feb 2026
-
----
-
-## 2. Firebase Cleanup (All in one file, do together)
+## 1. Firebase Cleanup (All in one file, do together)
 
 ### Remove debug `console.log` of Firebase config
 - **File:** `src/lib/firebase/firebase.ts` (lines 31-35)
@@ -76,7 +30,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 3. UX & Error Handling
+## 2. UX & Error Handling
 
 ### Show user-facing error when game state fails to load/save
 - **File:** `src/app/page.tsx` (line 40) and `src/lib/hooks/useGameState.ts`
@@ -87,7 +41,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 4. Code Quality & Refactoring
+## 3. Code Quality & Refactoring
 
 ### Extract duplicate found-words list into a shared component
 - **File:** `src/app/page.tsx` (lines ~351-390 and ~403-441)
@@ -119,7 +73,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 5. Performance (More involved, investigate first)
+## 4. Performance (More involved, investigate first)
 
 ### Reduce unused JavaScript (~83 KiB / ~450ms savings)
 - **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load.
@@ -129,7 +83,7 @@ Work through these top to bottom — each item is its own focused session, commi
 
 ---
 
-## 6. Major Upgrades (Plan carefully, do last)
+## 5. Major Upgrades (Plan carefully, do last)
 
 ### Update Next.js to address high-severity DoS vulnerabilities
 - **What:** The current Next.js 14.x has two high-severity CVEs: DoS via Image Optimizer `remotePatterns` misconfiguration and HTTP request deserialization via insecure React Server Components.

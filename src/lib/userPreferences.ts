@@ -88,25 +88,6 @@ export class UserPreferencesManager {
     }
   }
 
-  static async isFirstTimeUser(user?: User | null): Promise<boolean> {
-    const prefs = await this.getPreferences(user);
-    return !prefs.hasSeenTutorial;
-  }
-
-  static async markTutorialSeen(user?: User | null): Promise<void> {
-    await this.setPreferences({
-      hasSeenTutorial: true,
-      tutorialCompletedAt: new Date().toISOString(),
-    }, user);
-  }
-
-  static async resetTutorialStatus(user?: User | null): Promise<void> {
-    await this.setPreferences({
-      hasSeenTutorial: false,
-      tutorialCompletedAt: undefined,
-    }, user);
-  }
-
   // Migrate localStorage preferences to Firestore when user signs in
   static async migrateToFirestore(user: User): Promise<void> {
     if (typeof window === 'undefined') return;
@@ -128,21 +109,4 @@ export class UserPreferencesManager {
     }
   }
 
-  // Debug method to check current status (for development/troubleshooting)
-  static async debugStatus(user?: User | null): Promise<void> {
-    if (process.env.NODE_ENV !== 'development') return;
-    
-    console.log('=== UserPreferences Debug ===');
-    console.log('User:', user ? `${user.uid} (${user.displayName})` : 'Guest');
-    
-    if (typeof window !== 'undefined') {
-      const localStorageData = localStorage.getItem(this.STORAGE_KEY);
-      console.log('localStorage data:', localStorageData);
-    }
-    
-    const prefs = await this.getPreferences(user);
-    console.log('Current preferences:', prefs);
-    console.log('Is first time user:', !prefs.hasSeenTutorial);
-    console.log('=============================');
-  }
 }

@@ -75,13 +75,6 @@ class DictionaryService {
     }
   }
 
-  clearCache(): void {
-    this.cache.clear();
-  }
-
-  getCacheSize(): number {
-    return this.cache.size;
-  }
 }
 
 export const dictionaryService = new DictionaryService();
