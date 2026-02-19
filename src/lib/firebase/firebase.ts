@@ -37,7 +37,7 @@ try {
   throw error;
 }
 
-const db = initializeFirestore(app, { cache: persistentLocalCache() });
+const db = initializeFirestore(app, { localCache: persistentLocalCache() });
 const auth = getAuth(app);
 
 // Enable Auth persistence
