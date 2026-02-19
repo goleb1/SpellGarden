@@ -176,8 +176,8 @@ export default function YesterdaysPuzzleModal({
                   key={index}
                   className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-base sm:text-xl font-bold ${
                     index === 0
-                      ? 'bg-[#2D5A27] text-white'
-                      : 'bg-[#333333] text-white'
+                      ? 'bg-amber-300 text-black'
+                      : 'bg-purple-400 text-black'
                   }`}
                 >
                   {letter}
