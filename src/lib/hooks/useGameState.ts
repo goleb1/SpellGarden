@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
@@ -24,7 +24,7 @@ export const useGameState = (puzzleId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   // Function to migrate local storage to Firestore
-  const migrateLocalToFirestore = async () => {
+  const migrateLocalToFirestore = useCallback(async () => {
     try {
       const localState = localStorage.getItem(`gameState_${puzzleId}`);
       if (localState && user) {
@@ -42,7 +42,7 @@ export const useGameState = (puzzleId: string) => {
       console.error('Error migrating local storage to Firestore:', err);
       setError('Failed to migrate game data. Please try again.');
     }
-  };
+  }, [puzzleId, user]);
 
   useEffect(() => {
     const loadState = async () => {
@@ -113,7 +113,7 @@ export const useGameState = (puzzleId: string) => {
     };
 
     loadState();
-  }, [user, puzzleId]);
+  }, [user, puzzleId, migrateLocalToFirestore]);
 
   const updateState = async (newState: Partial<GameState>) => {
     if (!gameState) return;

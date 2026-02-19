@@ -18,13 +18,13 @@ export default function LetterGrid({
   bingoIsPossible,
   foundWords
 }: LetterGridProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640); // sm breakpoint
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -52,6 +52,8 @@ export default function LetterGrid({
     }
     return isFound ? 'bg-purple-400 hover:bg-purple-500' : 'bg-purple-200 hover:bg-purple-300';
   };
+
+  if (isMobile === null) return null;
 
   return (
     <div className="relative w-full h-full">

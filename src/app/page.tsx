@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Head from 'next/head';
 import LetterGrid from '@/components/LetterGrid';
@@ -15,6 +15,7 @@ import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useGameState } from '@/lib/hooks/useGameState';
 import Menu from '@/components/Menu';
+import FoundWordsList from '@/components/FoundWordsList';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
 
@@ -77,13 +78,13 @@ export default function Home() {
   }, []);
 
 
-  const handleLetterClick = (letter: string) => {
+  const handleLetterClick = useCallback((letter: string) => {
     setCurrentWord(prev => prev + letter);
-  };
+  }, []);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     setCurrentWord(prev => prev.slice(0, -1));
-  };
+  }, []);
 
   const handleShuffle = () => {
     if (!gameState) return;
@@ -134,28 +135,20 @@ export default function Home() {
     setIsWordDefinitionModalOpen(true);
   };
 
-  const handleCloseHowToPlay = () => {
-    setIsHowToPlayModalOpen(false);
-  };
-
-  const handleShowHowToPlay = () => {
-    setIsHowToPlayModalOpen(true);
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (isSubmitting || !gameState) return;
     setIsSubmitting(true);
 
     try {
       const result = await submitWord(currentWord, gameState);
-      
+
       if (result.isValid) {
         await updateState({
           score: gameState.score + result.score,
           foundWords: [...gameState.foundWords, currentWord.toLowerCase()]
         });
       }
-      
+
       if (result.message) {
         setMessage({
           text: result.message,
@@ -174,7 +167,7 @@ export default function Home() {
       // Clear message after 2 seconds
       setTimeout(() => setMessage(undefined), 2000);
     }
-  };
+  }, [isSubmitting, gameState, currentWord, updateState]);
 
   // Handle keyboard input
   useEffect(() => {
@@ -235,7 +228,7 @@ export default function Home() {
               <Menu 
                 onShowYesterdaysPuzzle={() => setIsYesterdaysPuzzleModalOpen(true)}
                 onShowHints={() => setIsHintsModalOpen(true)}
-                onShowHowToPlay={handleShowHowToPlay}
+                onShowHowToPlay={() => setIsHowToPlayModalOpen(true)}
                 timeToNextPuzzle={timeToNextPuzzle}
               />
               <h1 className="text-2xl font-bold">SpellGarden</h1>
@@ -350,49 +343,12 @@ export default function Home() {
 
             {/* Found Words - Mobile Only - Now at the bottom */}
             <div className="md:landscape:hidden flex-1 min-h-0 overflow-y-auto mt-4">
-              <motion.div 
-                layout
-                className="flex flex-wrap gap-2 justify-center p-1"
-              >
-                {getSortedWords().map((word) => {
-                  const isPangram = gameState.pangrams.includes(word);
-                  const getWordStyle = () => {
-                    if (isPangram) {
-                      return "bg-gradient-to-r from-rose-500/80 to-pink-500/80 text-white font-semibold shadow-lg shadow-rose-500/20";
-                    }
-                    switch (word.length) {
-                      case 4:
-                        return "bg-white/10 text-white/90";
-                      case 5:
-                        return "bg-emerald-500/20 text-emerald-100";
-                      case 6:
-                        return "bg-violet-500/30 text-violet-100";
-                      case 7:
-                        return "bg-amber-500/30 text-amber-100";
-                      default:
-                        return "bg-blue-500/30 text-blue-100";
-                    }
-                  };
-
-                  return (
-                    <motion.button
-                      layout
-                      key={word}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{
-                        layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
-                      }}
-                      onClick={() => handleWordClick(word)}
-                      className={`px-3 py-1 rounded-full uppercase cursor-pointer hover:opacity-80 transition-opacity ${getWordStyle()}`}
-                    >
-                      {word.toUpperCase()}
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <FoundWordsList
+                words={getSortedWords()}
+                pangrams={gameState.pangrams}
+                onWordClick={handleWordClick}
+                justify="center"
+              />
             </div>
           </div>
 
@@ -402,49 +358,12 @@ export default function Home() {
           {/* Found Words - Desktop Only */}
           <div className="hidden md:landscape:flex md:landscape:flex-col md:landscape:pt-4 md:landscape:h-full md:landscape:overflow-hidden">
             <div className="flex-1 min-h-0 overflow-y-auto">
-              <motion.div 
-                layout
-                className="flex flex-wrap gap-2 sm:gap-3 justify-start p-1 sm:p-4"
-              >
-                {getSortedWords().map((word) => {
-                  const isPangram = gameState.pangrams.includes(word);
-                  const getWordStyle = () => {
-                    if (isPangram) {
-                      return "bg-gradient-to-r from-rose-500/80 to-pink-500/80 text-white font-semibold shadow-lg shadow-rose-500/20";
-                    }
-                    switch (word.length) {
-                      case 4:
-                        return "bg-white/10 text-white/90";
-                      case 5:
-                        return "bg-emerald-500/20 text-emerald-100";
-                      case 6:
-                        return "bg-violet-500/30 text-violet-100";
-                      case 7:
-                        return "bg-amber-500/30 text-amber-100";
-                      default:
-                        return "bg-blue-500/30 text-blue-100";
-                    }
-                  };
-
-                  return (
-                    <motion.button
-                      layout
-                      key={word}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{
-                        layout: { duration: 0.3, type: "spring", damping: 25, stiffness: 300 }
-                      }}
-                      onClick={() => handleWordClick(word)}
-                      className={`px-3 py-1 rounded-full uppercase cursor-pointer hover:opacity-80 transition-opacity ${getWordStyle()}`}
-                    >
-                      {word.toUpperCase()}
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <FoundWordsList
+                words={getSortedWords()}
+                pangrams={gameState.pangrams}
+                onWordClick={handleWordClick}
+                justify="start"
+              />
             </div>
           </div>
         </div>
@@ -484,7 +403,7 @@ export default function Home() {
 
         <HowToPlayModal
           isOpen={isHowToPlayModalOpen}
-          onClose={handleCloseHowToPlay}
+          onClose={() => setIsHowToPlayModalOpen(false)}
         />
       </main>
     </>
