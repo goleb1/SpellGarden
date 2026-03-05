@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase';
-import { LEVELS } from './LevelIndicator';
+import { LEVELS, MOTHER_EARTH } from './LevelIndicator';
 
 interface YesterdaysPuzzleModalProps {
   isOpen: boolean;
@@ -90,6 +90,8 @@ export default function YesterdaysPuzzleModal({
     if (progress >= curr.threshold) return curr;
     return prev;
   }, LEVELS[0]);
+  const isMotherEarth = foundWords.length > 0 && foundWords.length === validWords.length;
+  const displayLevel = isMotherEarth ? MOTHER_EARTH : currentLevel;
   const wordCompletionPercentage = Math.round((foundWords.length / validWords.length) * 100);
 
   // Group words by starting letter
@@ -155,8 +157,8 @@ export default function YesterdaysPuzzleModal({
                 <div className="text-center border-l border-r border-[#2D5A27]/50 px-3">
                   <div className="text-gray-400 text-xs mb-0.5">Level</div>
                   <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-lg">{currentLevel.emoji}</span>
-                    <span className="text-white font-medium text-sm leading-none">{currentLevel.name}</span>
+                    <span className="text-lg">{displayLevel.emoji}</span>
+                    <span className="text-white font-medium text-sm leading-none">{displayLevel.name}</span>
                   </div>
                 </div>
 
