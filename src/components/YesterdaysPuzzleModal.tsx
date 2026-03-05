@@ -247,8 +247,8 @@ export default function YesterdaysPuzzleModal({
             </div>
 
             {/* Body — slides between word list and definition view */}
-            <div className="relative flex-1 overflow-hidden">
-              <AnimatePresence initial={false} custom={direction}>
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+              <AnimatePresence mode="wait" initial={false} custom={direction}>
                 {selectedWord === null ? (
                   <motion.div
                     key="word-list"
@@ -258,7 +258,7 @@ export default function YesterdaysPuzzleModal({
                     animate="center"
                     exit="exit"
                     transition={slideTransition}
-                    className="absolute inset-0 overflow-y-auto space-y-4 pr-2"
+                    className="space-y-4 pr-2"
                   >
                     {letterGroups.map(([letter, words]) => (
                       <div key={letter}>
@@ -294,7 +294,7 @@ export default function YesterdaysPuzzleModal({
                     animate="center"
                     exit="exit"
                     transition={slideTransition}
-                    className="absolute inset-0 overflow-y-auto flex flex-col"
+                    className="flex flex-col"
                   >
                     <WordDefinitionContent word={selectedWord} />
                   </motion.div>

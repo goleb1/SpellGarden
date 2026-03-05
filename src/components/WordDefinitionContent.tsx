@@ -20,7 +20,7 @@ interface WordDefinitionContentProps {
 
 export default function WordDefinitionContent({ word }: WordDefinitionContentProps) {
   const [definition, setDefinition] = useState<WordDefinition | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchDefinition = useCallback(async () => {
