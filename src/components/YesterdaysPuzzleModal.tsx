@@ -45,7 +45,6 @@ export default function YesterdaysPuzzleModal({
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
 
-  // Format the date as specified in the design
   const formattedDate = date.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'short',
@@ -53,17 +52,14 @@ export default function YesterdaysPuzzleModal({
     year: 'numeric'
   });
 
-  // All letters in a single array for display
   const allLetters = [centerLetter, ...outerLetters];
 
-  // Fetch user's found words when modal opens
   useEffect(() => {
     const fetchFoundWords = async () => {
       if (isOpen) {
         setSelectedWord(null);
         try {
           if (user) {
-            // Fetch from Firestore for authenticated users
             const progressRef = doc(db, `users/${user.uid}/progress/${puzzleId}`);
             const docSnap = await getDoc(progressRef);
             if (docSnap.exists()) {
@@ -75,7 +71,6 @@ export default function YesterdaysPuzzleModal({
               setScore(0);
             }
           } else {
-            // Fetch from localStorage for guests
             const savedState = localStorage.getItem(`gameState_${puzzleId}`);
             if (savedState) {
               const parsedState = JSON.parse(savedState);
@@ -97,7 +92,6 @@ export default function YesterdaysPuzzleModal({
     fetchFoundWords();
   }, [isOpen, puzzleId, user]);
 
-  // Calculate performance metrics
   const progress = score / totalPossibleScore;
   const currentLevel = LEVELS.reduce((prev, curr) => {
     if (progress >= curr.threshold) return curr;
@@ -107,7 +101,6 @@ export default function YesterdaysPuzzleModal({
   const displayLevel = isMotherEarth ? MOTHER_EARTH : currentLevel;
   const wordCompletionPercentage = Math.round((foundWords.length / validWords.length) * 100);
 
-  // Group words by starting letter
   const groupedWords = validWords.reduce((acc, word) => {
     const firstLetter = word[0].toUpperCase();
     if (!acc[firstLetter]) acc[firstLetter] = [];
@@ -115,10 +108,8 @@ export default function YesterdaysPuzzleModal({
     return acc;
   }, {} as Record<string, string[]>);
 
-  // Sort letter groups alphabetically
   const letterGroups = Object.entries(groupedWords).sort(([a], [b]) => a.localeCompare(b));
 
-  // Convert to Sets for faster lookups
   const foundWordsSet = new Set(foundWords);
   const pangramsSet = new Set(pangrams);
 
@@ -154,23 +145,64 @@ export default function YesterdaysPuzzleModal({
             exit={{ opacity: 0, scale: 0.95 }}
             className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-[95%] sm:w-[85%] md:w-[75%] lg:w-[800px] min-w-[280px] mx-4 p-6 border border-[#2D5A27] overflow-hidden max-h-[90vh] flex flex-col"
           >
-            {/* Header — animates between list view and definition view */}
-            <div className="mb-4 flex items-center justify-between gap-3 min-h-[48px]">
-              <AnimatePresence mode="wait" initial={false}>
-                {selectedWord === null ? (
+            {/* Header — always static */}
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-white">Yesterday&apos;s Puzzle</h2>
+                <p className="text-xs sm:text-sm text-gray-400">{formattedDate}</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5 shrink-0"
+              >
+                <IoClose size={20} />
+              </button>
+            </div>
+
+            {/* Performance Summary */}
+            <div className="mb-4 p-3 bg-[#142911] rounded-lg border border-[#2D5A27] text-sm">
+              <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2">
+                <div className="text-center">
+                  <div className="text-gray-400 text-xs mb-0.5">Score</div>
+                  <div className="text-xl font-bold text-white leading-none mb-0.5">{score}</div>
+                  <div className="text-[10px] text-gray-500 leading-none">of {totalPossibleScore}</div>
+                </div>
+                <div className="text-center border-l border-r border-[#2D5A27]/50 px-3">
+                  <div className="text-gray-400 text-xs mb-0.5">Level</div>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span className="text-lg">{displayLevel.emoji}</span>
+                    <span className="text-white font-medium text-sm leading-none">{displayLevel.name}</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-gray-400 text-xs mb-0.5">Words</div>
+                  <div className="text-xl font-bold text-white leading-none mb-0.5">{foundWords.length}</div>
+                  <div className="text-[10px] text-gray-500 leading-none">({wordCompletionPercentage}%)</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Letters Display */}
+            <div className="flex justify-center gap-1.5 mb-3">
+              {allLetters.map((letter, index) => (
+                <div
+                  key={index}
+                  className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-base sm:text-xl font-bold ${
+                    index === 0
+                      ? 'bg-amber-300 text-black'
+                      : 'bg-purple-400 text-black'
+                  }`}
+                >
+                  {letter}
+                </div>
+              ))}
+            </div>
+
+            {/* Word pill row — fixed height so nothing above shifts when a word is selected */}
+            <div className="h-9 flex items-center mb-3">
+              <AnimatePresence initial={false}>
+                {selectedWord !== null && (
                   <motion.div
-                    key="list-header"
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -16 }}
-                    transition={slideTransition}
-                  >
-                    <h2 className="text-lg sm:text-xl font-semibold text-white">Yesterday&apos;s Puzzle</h2>
-                    <p className="text-xs sm:text-sm text-gray-400">{formattedDate}</p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="detail-header"
                     initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 16 }}
@@ -194,59 +226,9 @@ export default function YesterdaysPuzzleModal({
                   </motion.div>
                 )}
               </AnimatePresence>
-              <button
-                onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5 shrink-0"
-              >
-                <IoClose size={20} />
-              </button>
             </div>
 
-            {/* Performance Summary — always visible for context */}
-            <div className="mb-4 p-3 bg-[#142911] rounded-lg border border-[#2D5A27] text-sm">
-              <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2">
-                {/* Score */}
-                <div className="text-center">
-                  <div className="text-gray-400 text-xs mb-0.5">Score</div>
-                  <div className="text-xl font-bold text-white leading-none mb-0.5">{score}</div>
-                  <div className="text-[10px] text-gray-500 leading-none">of {totalPossibleScore}</div>
-                </div>
-
-                {/* Level */}
-                <div className="text-center border-l border-r border-[#2D5A27]/50 px-3">
-                  <div className="text-gray-400 text-xs mb-0.5">Level</div>
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-lg">{displayLevel.emoji}</span>
-                    <span className="text-white font-medium text-sm leading-none">{displayLevel.name}</span>
-                  </div>
-                </div>
-
-                {/* Word Completion */}
-                <div className="text-center">
-                  <div className="text-gray-400 text-xs mb-0.5">Words</div>
-                  <div className="text-xl font-bold text-white leading-none mb-0.5">{foundWords.length}</div>
-                  <div className="text-[10px] text-gray-500 leading-none">({wordCompletionPercentage}%)</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Letters Display — always visible for context */}
-            <div className="flex justify-center gap-1.5 mb-4">
-              {allLetters.map((letter, index) => (
-                <div
-                  key={index}
-                  className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-base sm:text-xl font-bold ${
-                    index === 0
-                      ? 'bg-amber-300 text-black'
-                      : 'bg-purple-400 text-black'
-                  }`}
-                >
-                  {letter}
-                </div>
-              ))}
-            </div>
-
-            {/* Body — slides between word list and definition view */}
+            {/* Body — slides between word list and definition */}
             <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
               <AnimatePresence mode="wait" initial={false} custom={direction}>
                 {selectedWord === null ? (
