@@ -39,16 +39,26 @@ const getDailyPuzzle = (date: Date): Puzzle => {
   const todaysPuzzle = puzzleSet.find(puzzle => puzzle.live_date === formattedDate);
   
   if (!todaysPuzzle) {
-    // If no puzzle is scheduled for today, find the next available puzzle
+    // During a schedule gap, preserve what players actually saw by using the
+    // most recent prior puzzle. This also keeps "yesterday's puzzle" from
+    // incorrectly showing today's newly scheduled puzzle.
+    const previousPuzzles = puzzleSet
+      .filter(puzzle => puzzle.live_date < formattedDate)
+      .sort((a, b) => b.live_date.localeCompare(a.live_date));
+
+    if (previousPuzzles.length > 0) {
+      return previousPuzzles[0];
+    }
+
+    // Before the schedule begins, use the first upcoming puzzle.
     const futurePuzzles = puzzleSet
       .filter(puzzle => puzzle.live_date > formattedDate)
       .sort((a, b) => a.live_date.localeCompare(b.live_date));
-    
+
     if (futurePuzzles.length > 0) {
       return futurePuzzles[0];
     }
-    
-    // If no future puzzles, return the last puzzle in the set
+
     return puzzleSet[puzzleSet.length - 1];
   }
   
