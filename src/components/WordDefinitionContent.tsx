@@ -107,7 +107,7 @@ export default function WordDefinitionContent({ word }: WordDefinitionContentPro
       </div>
 
       <div className="mt-4 pt-4 border-t border-[#2D5A27] text-center">
-        <p className="text-xs text-gray-500">Definitions provided by Free Dictionary API</p>
+        <p className="text-xs text-gray-500">Definitions from FreeDictionaryAPI and Datamuse</p>
       </div>
     </>
   );
