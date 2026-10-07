@@ -26,12 +26,6 @@ Grotesque — Bricolage's capital Q was nearly indistinguishable from an O on th
 letter tiles, a real legibility problem for a word game.) See `DESIGN_VISION.md`
 for the larger structural ideas layered on top of this later.
 
-### Bare spinner loading screen
-- **What:** While `useGameState` loads, the whole page is replaced by a spinner on a black screen.
-- **Fix:** Render a skeleton of the board/header shape instead, so the layout doesn't pop in.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
 ### Nothing to share — no OG image, manifest, or share card
 - **What:** `public/` is empty. No Open Graph image, no `manifest.json`, no apple-touch-icon. Pasting the link anywhere shows a blank preview card.
 - **Fix:** Add an OG image, web manifest, and touch icons. A Wordle-style "share your score" grid could follow later.
