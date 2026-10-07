@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { IoClose } from 'react-icons/io5';
+import { X } from '@phosphor-icons/react';
 import WordDefinitionContent, { getWordStyle } from './WordDefinitionContent';
 
 interface WordDefinitionModalProps {
@@ -35,25 +35,25 @@ export default function WordDefinitionModal({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-[95%] sm:w-[85%] md:w-[600px] mx-4 p-6 border border-[#2D5A27] overflow-hidden max-h-[80vh] flex flex-col"
+            className="relative bg-surface rounded-xl shadow-xl w-[95%] sm:w-[85%] md:w-[600px] mx-4 p-6 border border-ink/15 overflow-hidden max-h-[80vh] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`px-3 py-1 rounded-full uppercase font-semibold ${getWordStyle(word, isPangram)}`}>
+                <div className={`px-3 py-1 rounded-full uppercase font-display font-semibold ${getWordStyle(word, isPangram)}`}>
                   {word.toUpperCase()}
                 </div>
                 {isPangram && (
-                  <span className="text-xs px-2 py-1 bg-rose-500/20 text-rose-300 rounded-full border border-rose-500/30">
+                  <span className="text-xs px-2 py-1 bg-rose/20 text-rose rounded-full border border-rose/30">
                     PANGRAM
                   </span>
                 )}
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5"
+                className="p-2 text-muted hover:text-ink transition-colors rounded-full hover:bg-ink/5"
               >
-                <IoClose size={20} />
+                <X size={20} />
               </button>
             </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChartBar, TextAa, Lightbulb } from '@phosphor-icons/react';
 import {
   generateLetterCountGrid,
   generateTwoLetterHints,
@@ -122,7 +123,7 @@ export default function HintsModal({
           <tbody>
             {letters.map(letter => {
               const isCenterLetter = letter === centerLetter;
-              const rowClass = isCenterLetter ? 'bg-green-500/20' : '';
+              const rowClass = isCenterLetter ? 'bg-gold/15' : '';
 
               let rowTotal = 0;
               const cellValues = displayLengths.map(displayLength => {
@@ -145,7 +146,7 @@ export default function HintsModal({
 
               return (
                 <tr key={letter} className={rowClass}>
-                  <td className={`px-2 py-1 font-medium ${isCenterLetter ? 'text-green-400' : 'text-white'}`}>
+                  <td className={`px-2 py-1 font-medium ${isCenterLetter ? 'text-gold' : 'text-ink'}`}>
                     {letter}
                   </td>
                   {cellValues.map((count, index) => (
@@ -153,14 +154,14 @@ export default function HintsModal({
                       {count > 0 ? count : '-'}
                     </td>
                   ))}
-                  <td className="text-center px-2 py-1 font-medium text-white">
+                  <td className="text-center px-2 py-1 font-medium text-ink">
                     {rowTotal}
                   </td>
                 </tr>
               );
             })}
             {/* Column totals */}
-            <tr className="border-t border-gray-600 mt-2">
+            <tr className="border-t border-ink/10 mt-2">
               <td className="px-2 py-1 font-medium text-gray-400">Total</td>
               {displayLengths.map(displayLength => {
                 let columnTotal = 0;
@@ -176,12 +177,12 @@ export default function HintsModal({
                   }
                 });
                 return (
-                  <td key={displayLength} className="text-center px-2 py-1 font-medium text-white">
+                  <td key={displayLength} className="text-center px-2 py-1 font-medium text-ink">
                     {columnTotal}
                   </td>
                 );
               })}
-              <td className="text-center px-2 py-1 font-bold text-green-400">
+              <td className="text-center px-2 py-1 font-bold text-leaf">
                 {Object.values(letterCountGrid).reduce((total, lengths) =>
                   total + Object.values(lengths).reduce((sum, count) => sum + count, 0), 0
                 )}
@@ -202,10 +203,10 @@ export default function HintsModal({
         {sortedTwoLetters.map(([letters, count]) => (
           <div
             key={letters}
-            className="flex items-center justify-between p-2 bg-white/10 rounded-lg"
+            className="flex items-center justify-between p-2 bg-ink/10 rounded-lg"
           >
-            <span className="font-medium text-white">{letters}</span>
-            <span className="text-green-400 font-bold">{count}</span>
+            <span className="font-medium text-ink">{letters}</span>
+            <span className="text-leaf font-bold">{count}</span>
           </div>
         ))}
       </div>
@@ -216,7 +217,7 @@ export default function HintsModal({
     if (loadingClues) {
       return (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-400"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-leaf"></div>
           <span className="ml-3 text-gray-400">Loading word clues...</span>
         </div>
       );
@@ -242,14 +243,14 @@ export default function HintsModal({
               key={index}
               className={`p-3 rounded-lg border transition-colors ${
                 isFullyRevealed
-                  ? 'bg-white/5 border-gray-700 opacity-70'
-                  : 'bg-white/10 border-green-500/20'
+                  ? 'bg-ink/5 border-ink/10 opacity-70'
+                  : 'bg-ink/10 border-leaf/20'
               }`}
             >
               {/* Always visible: word length + part of speech */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-green-400 font-bold text-sm">
+                  <span className="text-leaf font-bold text-sm">
                     {clue.wordLength} letters
                   </span>
                   {clue.partOfSpeech && (
@@ -264,8 +265,8 @@ export default function HintsModal({
                   {level >= 1 && (
                     <>
                       <span className="text-gray-600">•</span>
-                      <span className="text-white text-sm font-medium">
-                        starts with <span className="text-green-300">{clue.firstLetter}</span>
+                      <span className="text-ink text-sm font-medium">
+                        starts with <span className="text-leaf">{clue.firstLetter}</span>
                       </span>
                     </>
                   )}
@@ -274,7 +275,7 @@ export default function HintsModal({
                 {!isFullyRevealed && (
                   <button
                     onClick={() => revealNext(index)}
-                    className="ml-2 shrink-0 px-2 py-1 text-xs rounded bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30 transition-colors"
+                    className="ml-2 shrink-0 px-2 py-1 text-xs rounded bg-leaf/15 border border-leaf/30 text-leaf hover:bg-leaf/25 transition-colors"
                   >
                     Reveal
                   </button>
@@ -286,14 +287,14 @@ export default function HintsModal({
 
               {/* Tap 2: hint phrase */}
               {level >= 2 && (
-                <p className="mt-2 text-gray-300 text-sm italic border-t border-gray-700/50 pt-2">
+                <p className="mt-2 text-gray-300 text-sm italic border-t border-ink/10/50 pt-2">
                   {clue.hintPhrase}
                 </p>
               )}
 
               {/* Tap 3: full definition */}
               {level >= 3 && (
-                <p className="mt-2 text-gray-200 text-sm border-t border-gray-700/50 pt-2">
+                <p className="mt-2 text-gray-200 text-sm border-t border-ink/10/50 pt-2">
                   {clue.definition}
                 </p>
               )}
@@ -337,55 +338,56 @@ export default function HintsModal({
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-[#1C1C1E] border border-[#2D5A27] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <div className="bg-surface border border-ink/15 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h2 className="text-xl font-bold text-white">Hints</h2>
+              <div className="flex items-center justify-between p-4 border-b border-ink/10">
+                <h2 className="text-xl font-display font-bold text-ink">Hints</h2>
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  className="p-2 hover:bg-ink/10 rounded-lg transition-colors"
                   aria-label="Close hints"
                 >
-                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X size={22} className="text-muted" />
                 </button>
               </div>
 
               {/* Hint Level Buttons */}
-              <div className="flex border-b border-gray-700">
+              <div className="flex border-b border-ink/10">
                 <button
                   onClick={() => setActiveLevel('level1')}
-                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors ${
                     activeLevel === 'level1'
-                      ? 'bg-green-500/20 text-green-400 border-b-2 border-green-500'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-leaf/15 text-leaf border-b-2 border-leaf'
+                      : 'text-muted hover:text-ink hover:bg-ink/5'
                   }`}
                   aria-label="Letter Counts hint level"
                 >
-                  📊 Letter Counts
+                  <ChartBar size={16} weight="duotone" />
+                  Letter Counts
                 </button>
                 <button
                   onClick={() => setActiveLevel('level2')}
-                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors ${
                     activeLevel === 'level2'
-                      ? 'bg-green-500/20 text-green-400 border-b-2 border-green-500'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-leaf/15 text-leaf border-b-2 border-leaf'
+                      : 'text-muted hover:text-ink hover:bg-ink/5'
                   }`}
                   aria-label="Two-Letter List hint level"
                 >
-                  🔤 Two-Letter List
+                  <TextAa size={16} weight="duotone" />
+                  Two-Letter List
                 </button>
                 <button
                   onClick={() => setActiveLevel('level3')}
-                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors ${
                     activeLevel === 'level3'
-                      ? 'bg-green-500/20 text-green-400 border-b-2 border-green-500'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-leaf/15 text-leaf border-b-2 border-leaf'
+                      : 'text-muted hover:text-ink hover:bg-ink/5'
                   }`}
                   aria-label="Word Clues hint level"
                 >
-                  💡 Word Clues
+                  <Lightbulb size={16} weight="duotone" />
+                  Word Clues
                 </button>
               </div>
 

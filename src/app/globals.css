@@ -2,20 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 /* Prevent default touch behaviors */
 html, body {
   touch-action: manipulation;
@@ -28,13 +14,9 @@ html, body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: #F0EFE6; /* ink */
+  background: #131512; /* bg */
+  font-family: var(--font-body), -apple-system, sans-serif;
 }
 
 /* Allow scrolling only in word list container */
@@ -59,4 +41,13 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@keyframes caret-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+.animate-caret {
+  animation: caret-blink 1.1s step-end infinite;
 }

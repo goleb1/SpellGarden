@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Flower, SortAscending, Shuffle as ShuffleIcon, Backspace, ArrowElbowDownLeft } from '@phosphor-icons/react';
 import LetterGrid from '@/components/LetterGrid';
 import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
@@ -105,14 +106,14 @@ export default function Home() {
     });
   };
 
-  const getSortEmoji = (mode: SortMode) => {
+  const getSortLabel = (mode: SortMode) => {
     switch (mode) {
       case 'chronological':
-        return '⏪';
+        return 'Newest';
       case 'alphabetical':
-        return '🔤';
+        return 'A–Z';
       case 'length':
-        return '📶';
+        return 'Length';
     }
   };
 
@@ -191,14 +192,14 @@ export default function Home() {
 
   if (stateLoading || !gameState) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      <div className="min-h-screen bg-bg text-ink flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen p-4 bg-black text-white flex flex-col h-screen">
+    <main className="min-h-screen p-4 bg-bg text-ink flex flex-col h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-2 sm:mb-8">
         {/* Top row with menu, title, info, and score on mobile */}
@@ -210,7 +211,10 @@ export default function Home() {
               onShowHowToPlay={() => setIsHowToPlayModalOpen(true)}
               timeToNextPuzzle={timeToNextPuzzle}
             />
-            <h1 className="text-2xl font-bold">SpellGarden</h1>
+            <h1 className="text-2xl font-display font-bold flex items-center gap-2">
+              SpellGarden
+              <Flower size={20} weight="duotone" className="text-petal-found" />
+            </h1>
             <div className="ml-2">
               <PuzzleInfo 
                 bingoIsPossible={gameState.bingoIsPossible}
@@ -223,7 +227,7 @@ export default function Home() {
             </div>
           </div>
           {/* Score - visible on mobile only in header */}
-          <div className="sm:hidden text-2xl font-bold min-w-[3ch] text-right">
+          <div className="sm:hidden text-2xl font-display font-bold min-w-[3ch] text-right">
             {gameState.score}
           </div>
         </div>
@@ -237,7 +241,7 @@ export default function Home() {
             totalWords={gameState.validWords.length}
           />
           {/* Score - visible on desktop only next to level indicator */}
-          <div className="hidden sm:block text-2xl font-bold min-w-[3ch] text-right">
+          <div className="hidden sm:block text-2xl font-display font-bold min-w-[3ch] text-right">
             {gameState.score}
           </div>
         </div>
@@ -258,7 +262,7 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     className={`text-center text-lg font-semibold ${
-                      message.type === 'error' ? 'text-red-400' : 'text-green-400'
+                      message.type === 'error' ? 'text-red-400' : 'text-leaf'
                     }`}
                   >
                     {message.text}
@@ -267,13 +271,18 @@ export default function Home() {
               </AnimatePresence>
             </div>
 
-            <input
-              type="text"
-              value={currentWord}
-              className="w-full max-w-full sm:max-w-md md:max-w-lg p-2 sm:p-3 text-center text-xl sm:text-2xl font-semibold bg-white/10 text-white border-0 rounded-full"
-              placeholder="Type or click letters"
-              readOnly
-            />
+            <div className="w-full max-w-full sm:max-w-md md:max-w-lg min-h-[2.75rem] sm:min-h-[3.25rem] flex items-center justify-center px-4">
+              {currentWord ? (
+                <div className="font-display text-2xl sm:text-3xl font-bold tracking-wide flex items-baseline">
+                  <span>{currentWord}</span>
+                  <span className="inline-block w-[3px] h-[0.95em] bg-gold ml-[3px] animate-caret" />
+                </div>
+              ) : (
+                <div className="font-display text-lg sm:text-xl text-muted">
+                  Type or click letters
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Letter Grid Container */}
@@ -290,32 +299,36 @@ export default function Home() {
           </div>
 
           {/* Control Buttons - Now directly under game board */}
-          <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-6 mt-2 sm:mt-6">
-            <button 
-              className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tr-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-1 sm:order-1"
+          <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-4 mt-2 sm:mt-6">
+            <button
+              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-1 sm:order-1"
               onClick={handleSort}
             >
-              Sort {getSortEmoji(sortMode)}
+              <SortAscending size={16} weight="duotone" className="text-leaf shrink-0" />
+              {getSortLabel(sortMode)}
             </button>
-            <button 
-              className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tr-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-2 sm:order-2"
+            <button
+              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-2 sm:order-2"
               onClick={handleShuffle}
             >
+              <ShuffleIcon size={16} weight="duotone" className="text-leaf shrink-0" />
               Shuffle
             </button>
-            <button 
-              className="px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tl-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-3 sm:order-3"
+            <button
+              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-3 sm:order-3"
               onClick={handleDelete}
             >
+              <Backspace size={16} weight="duotone" className="text-leaf shrink-0" />
               Delete
             </button>
-            <button 
-              className={`px-2 sm:px-8 py-1.5 sm:py-2.5 bg-green-500/20 border border-green-500/30 rounded-bl-3xl rounded-br-3xl rounded-tl-3xl hover:bg-green-500/30 text-green-400 transition-colors text-sm sm:text-base whitespace-nowrap order-4 sm:order-4 ${
+            <button
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-7 py-1.5 sm:py-2.5 rounded-2xl bg-gold text-gold-ink font-semibold hover:bg-gold/90 transition-colors text-sm sm:text-base whitespace-nowrap order-4 sm:order-4 ${
                 currentWord.length < 4 ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={handleSubmit}
               disabled={currentWord.length < 4}
             >
+              <ArrowElbowDownLeft size={16} weight="duotone" className="shrink-0" />
               Enter
             </button>
           </div>
@@ -332,7 +345,7 @@ export default function Home() {
         </div>
 
         {/* Vertical Divider */}
-        <div className="hidden md:landscape:block w-px bg-white/20" />
+        <div className="hidden md:landscape:block w-px bg-ink/15" />
 
         {/* Found Words - Desktop Only */}
         <div className="hidden md:landscape:flex md:landscape:flex-col md:landscape:pt-4 md:landscape:h-full md:landscape:overflow-hidden">

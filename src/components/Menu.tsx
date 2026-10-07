@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { List, Lightbulb, CalendarBlank, Question } from '@phosphor-icons/react';
 
 interface MenuProps {
   onShowYesterdaysPuzzle: () => void;
@@ -20,20 +21,10 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-white/10 rounded-lg transition-colors mr-2 flex items-center"
+        className="p-2 hover:bg-surface rounded-lg transition-colors mr-2 flex items-center"
         aria-label="Menu"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
+        <List size={24} weight="duotone" className="text-ink" />
       </button>
 
       {/* Dropdown Menu */}
@@ -52,17 +43,17 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="absolute left-0 top-full mt-2 w-56 rounded-lg bg-[#1C1C1E] shadow-lg ring-1 ring-black ring-opacity-5 z-50 border border-[#2D5A27]"
+              className="absolute left-0 top-full mt-2 w-56 rounded-lg bg-surface shadow-lg ring-1 ring-black ring-opacity-5 z-50 border border-ink/15"
             >
               <div className="p-2 space-y-1">
                 {/* Next Puzzle Countdown */}
                 <div className="px-3 py-2 text-sm">
-                  <div className="text-gray-400">Next puzzle in:</div>
-                  <div className="text-white font-medium">{timeToNextPuzzle}</div>
+                  <div className="text-muted">Next puzzle in:</div>
+                  <div className="text-ink font-medium">{timeToNextPuzzle}</div>
                 </div>
 
                 {/* Divider */}
-                <div className="h-px bg-gray-700" />
+                <div className="h-px bg-ink/10" />
 
                 {/* Hints Option */}
                 <button
@@ -70,9 +61,9 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
                     onShowHints();
                     setIsOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-ink/10 rounded-md transition-colors"
                 >
-                  <span className="text-lg">💡</span>
+                  <Lightbulb size={18} weight="duotone" className="text-gold" />
                   Hints
                 </button>
 
@@ -82,9 +73,9 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
                     onShowYesterdaysPuzzle();
                     setIsOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-ink/10 rounded-md transition-colors"
                 >
-                  <span className="text-lg">📅</span>
+                  <CalendarBlank size={18} weight="duotone" className="text-leaf" />
                   Yesterday&apos;s Puzzle
                 </button>
 
@@ -94,29 +85,29 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
                     onShowHowToPlay();
                     setIsOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-ink/10 rounded-md transition-colors"
                 >
-                  <span className="text-lg">❓</span>
+                  <Question size={18} weight="duotone" className="text-petal-found" />
                   How to Play
                 </button>
 
                 {/* Divider */}
-                <div className="h-px bg-gray-700" />
+                <div className="h-px bg-ink/10" />
 
                 {/* Authentication Section */}
                 <div className="px-3 py-2">
                   {user ? (
                     <>
-                      <div className="text-sm text-gray-300 mb-2">
+                      <div className="text-sm text-muted mb-2">
                         Signed in as:
-                        <div className="font-medium text-white">{user.displayName}</div>
+                        <div className="font-medium text-ink">{user.displayName}</div>
                       </div>
                       <button
                         onClick={() => {
                           signOut();
                           setIsOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-sm text-white bg-red-500/20 hover:bg-red-500/30 rounded-md transition-colors"
+                        className="w-full px-3 py-2 text-sm text-ink bg-rose/20 hover:bg-rose/30 rounded-md transition-colors"
                       >
                         Sign Out
                       </button>
@@ -127,7 +118,7 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
                         signInWithGoogle();
                         setIsOpen(false);
                       }}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-white text-gray-800 rounded-md hover:bg-gray-100 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-ink text-bg rounded-md hover:bg-ink/90 transition-colors"
                     >
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path
@@ -158,4 +149,4 @@ export default function Menu({ onShowYesterdaysPuzzle, onShowHints, onShowHowToP
       </AnimatePresence>
     </div>
   );
-} 
+}

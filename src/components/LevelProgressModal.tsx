@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { LEVELS, Level, MOTHER_EARTH } from './LevelIndicator';
-import { IoClose } from 'react-icons/io5';
+import { X, Leaf } from '@phosphor-icons/react';
 
 interface LevelProgressModalProps {
   isOpen: boolean;
@@ -88,29 +88,31 @@ export default function LevelProgressModal({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-full max-w-[400px] min-w-[280px] mx-4 p-6 border border-[#2D5A27]"
+            className="relative bg-surface rounded-xl shadow-xl w-full max-w-[400px] min-w-[280px] mx-4 p-6 border border-ink/15"
           >
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-2 right-2 p-3 text-gray-400 hover:text-white transition-colors z-20 rounded-full hover:bg-white/5"
+              className="absolute top-2 right-2 p-3 text-muted hover:text-ink transition-colors z-20 rounded-full hover:bg-ink/5"
             >
-              <IoClose size={24} className="relative" />
+              <X size={24} className="relative" />
             </button>
 
             {/* Title */}
-            <h2 className="text-xl font-semibold mb-6 text-white relative z-20">Keep Growing! 🍃</h2>
+            <h2 className="text-xl font-display font-semibold mb-6 text-ink relative z-20 flex items-center gap-2">
+              Keep Growing! <Leaf size={20} weight="duotone" className="text-leaf" />
+            </h2>
 
             {/* Level progression */}
             <div className="space-y-8 relative">
               {/* Vertical progress bar container */}
-              <div className="absolute left-[17px] top-5 bottom-5 w-[6px] bg-[#333333] z-0">
+              <div className="absolute left-[17px] top-5 bottom-5 w-[6px] bg-ink/10 z-0">
                 <motion.div
                   initial={false}
-                  animate={{ 
+                  animate={{
                     height: `${calculateProgressHeight()}%`
                   }}
-                  className="absolute bottom-0 left-0 w-full bg-[#2D5A27] origin-bottom"
+                  className="absolute bottom-0 left-0 w-full bg-leaf origin-bottom"
                 />
               </div>
 
@@ -118,15 +120,15 @@ export default function LevelProgressModal({
               {isMotherEarth && (
                 <div className="relative">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 bg-[#142911] border-[#2D5A27] relative z-10 ring-2 ring-[#2D5A27] ring-offset-2 ring-offset-[#1C1C1E]">
-                      <span className="text-lg">{MOTHER_EARTH.emoji}</span>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 bg-leaf/15 border-leaf/60 relative z-10 ring-2 ring-leaf/60 ring-offset-2 ring-offset-surface">
+                      <MOTHER_EARTH.icon size={18} weight="duotone" className="text-leaf" />
                     </div>
                     <div className="flex-1 relative z-10">
                       <div className="flex items-center justify-between relative">
-                        <div className="absolute top-0 left-0 right-0 h-[1px] bg-[#2D5A27] -translate-y-1" />
-                        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#2D5A27] translate-y-1" />
-                        <span className="font-medium text-white py-2">{MOTHER_EARTH.name}</span>
-                        <span className="font-bold text-white py-2">{score}</span>
+                        <div className="absolute top-0 left-0 right-0 h-[1px] bg-leaf/60 -translate-y-1" />
+                        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-leaf/60 translate-y-1" />
+                        <span className="font-medium text-ink py-2">{MOTHER_EARTH.name}</span>
+                        <span className="font-bold text-ink py-2">{score}</span>
                       </div>
                     </div>
                   </div>
@@ -147,13 +149,13 @@ export default function LevelProgressModal({
                     <div className="flex items-center gap-4">
                       {/* Circle indicator - width: 40px (w-10) */}
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-[#1C1C1E] relative z-10 ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-surface relative z-10 ${
                           isCompleted
-                            ? 'bg-[#142911] border-[#2D5A27]'
-                            : 'border-[#333333]'
-                        } ${isCurrent ? 'ring-2 ring-[#2D5A27] ring-offset-2 ring-offset-[#1C1C1E]' : ''}`}
+                            ? 'bg-leaf/15 border-leaf/60'
+                            : 'border-ink/15'
+                        } ${isCurrent ? 'ring-2 ring-leaf/60 ring-offset-2 ring-offset-surface' : ''}`}
                       >
-                        <span className="text-lg">{level.emoji}</span>
+                        <level.icon size={18} weight="duotone" className={isCompleted ? 'text-leaf' : 'text-muted'} />
                       </div>
 
                       <div className="flex-1 relative z-10">
@@ -162,20 +164,20 @@ export default function LevelProgressModal({
                           {isCurrent && (
                             <>
                               {/* Top line */}
-                              <div className="absolute top-0 left-0 right-0 h-[1px] bg-[#2D5A27] -translate-y-1" />
+                              <div className="absolute top-0 left-0 right-0 h-[1px] bg-leaf/60 -translate-y-1" />
                               {/* Bottom line */}
-                              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#2D5A27] translate-y-1" />
+                              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-leaf/60 translate-y-1" />
                             </>
                           )}
-                          <span className={`font-medium ${isCompleted && !isCurrent ? 'text-[#888888]' : 'text-white'} ${isCurrent ? 'py-2' : ''}`}>
+                          <span className={`font-medium ${isCompleted && !isCurrent ? 'text-muted' : 'text-ink'} ${isCurrent ? 'py-2' : ''}`}>
                             {level.name}
                           </span>
-                          <span className={`font-bold ${isCompleted && !isCurrent ? 'text-[#888888]' : 'text-white'} ${isCurrent ? 'py-2' : ''}`}>
+                          <span className={`font-bold ${isCompleted && !isCurrent ? 'text-muted' : 'text-ink'} ${isCurrent ? 'py-2' : ''}`}>
                             {getLevelScore(level, nextLevel)}
                           </span>
                         </div>
                         {!isCompleted && (
-                          <p className="text-sm text-[#666666]">{pointsAway} points away</p>
+                          <p className="text-sm text-muted">{pointsAway} points away</p>
                         )}
                       </div>
                     </div>
