@@ -26,12 +26,6 @@ Grotesque — Bricolage's capital Q was nearly indistinguishable from an O on th
 letter tiles, a real legibility problem for a word game.) See `DESIGN_VISION.md`
 for the larger structural ideas layered on top of this later.
 
-### Desktop two-column layout disappears outside landscape
-- **What:** The found-words sidebar and divider are gated behind `md:landscape:` classes. In an ordinary desktop browser window that happens to be taller than wide, the two-column layout vanishes entirely and the game looks like the mobile layout stretched out.
-- **Fix:** Switch the breakpoint logic to a real width-based breakpoint (e.g. `lg:`) or a container query instead of `landscape`, and cap/center the content width on wide viewports instead of leaving the board pinned to the top-left.
-- **Priority:** Medium — likely the actual cause of the oddly empty desktop screenshot from the review.
-- **Spotted:** Code review, Oct 2026
-
 ### Bare spinner loading screen
 - **What:** While `useGameState` loads, the whole page is replaced by a spinner on a black screen.
 - **Fix:** Render a skeleton of the board/header shape instead, so the layout doesn't pop in.
@@ -67,12 +61,6 @@ Low priority overall — the game is mostly played by two people right now.
 ## Code Simplification / Tech Debt
 
 This section is the current top priority (owner feedback, Oct 2026).
-
-### Found-words list renders twice in the DOM
-- **What:** `page.tsx` renders `<FoundWordsList>` once for mobile and once for desktop, with CSS hiding whichever doesn't apply — both copies exist in the DOM and both run Framer Motion animations.
-- **Fix:** Render one instance and switch its layout/classes responsively, or conditionally render based on a `useMediaQuery`-style hook.
-- **Priority:** Low
-- **Spotted:** Code review, Oct 2026
 
 ### Hint Level 3 fetches definitions one at a time
 - **What:** `generateWordClues` awaits one `/api/definition/:word` call per unfound word, sequentially. The new API route is fast and cached (~0.3s/word measured), so this is no longer the 15-minute stall it used to be, but on a puzzle with 50-70 words it can still take a noticeable number of seconds before Level 3 is ready.

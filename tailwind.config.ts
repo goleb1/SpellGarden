@@ -4,6 +4,11 @@ const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      screens: {
+        // Two-column layout (board left, found words right): any screen at
+        // least 1024px wide, plus tablets and small windows in landscape.
+        wide: { raw: "(min-width: 1024px), (min-width: 768px) and (orientation: landscape)" },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",

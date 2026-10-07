@@ -6,7 +6,6 @@ interface FoundWordsListProps {
   words: string[];
   pangrams: string[];
   onWordClick: (word: string) => void;
-  justify?: 'center' | 'start';
 }
 
 // Found words plant a "garden of blooms" — longer words earn richer blooms, and a
@@ -29,13 +28,11 @@ function getWordStyle(word: string, isPangram: boolean): string {
   }
 }
 
-export default function FoundWordsList({ words, pangrams, onWordClick, justify = 'center' }: FoundWordsListProps) {
-  const justifyClass = justify === 'start' ? 'justify-start p-1 sm:p-4' : 'justify-center p-1';
-
+export default function FoundWordsList({ words, pangrams, onWordClick }: FoundWordsListProps) {
   return (
     <motion.div
       layout
-      className={`flex flex-wrap gap-2 sm:gap-3 ${justifyClass}`}
+      className="flex flex-wrap gap-2 sm:gap-3 p-1 justify-center wide:justify-start wide:p-4"
     >
       {words.map((word) => {
         const isPangram = pangrams.includes(word);
