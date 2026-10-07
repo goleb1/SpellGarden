@@ -68,12 +68,6 @@ Low priority overall — the game is mostly played by two people right now.
 
 This section is the current top priority (owner feedback, Oct 2026).
 
-### `page.tsx` is doing too much
-- **What:** 400+ lines, ten pieces of `useState`, and six separate modal-open booleans.
-- **Fix:** Extract `<GameHeader>`, `<WordInput>`, and `<GameControls>` components; collapse the modal booleans into one `activeModal: 'yesterday' | 'definition' | 'hints' | 'howToPlay' | null` field.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
 ### Found-words list renders twice in the DOM
 - **What:** `page.tsx` renders `<FoundWordsList>` once for mobile and once for desktop, with CSS hiding whichever doesn't apply — both copies exist in the DOM and both run Framer Motion animations.
 - **Fix:** Render one instance and switch its layout/classes responsively, or conditionally render based on a `useMediaQuery`-style hook.

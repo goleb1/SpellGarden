@@ -1,37 +1,29 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SortAscending, Shuffle as ShuffleIcon, Backspace, ArrowElbowDownLeft } from '@phosphor-icons/react';
 import LetterGrid from '@/components/LetterGrid';
-import LevelIndicator from '@/components/LevelIndicator';
-import PuzzleInfo from '@/components/PuzzleInfo';
+import GameHeader from '@/components/GameHeader';
+import WordInput, { type GameMessage } from '@/components/WordInput';
+import GameControls from '@/components/GameControls';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import WordDefinitionModal from '@/components/WordDefinitionModal';
 import HintsModal from '@/components/HintsModal';
 import HowToPlayModal from '@/components/HowToPlayModal';
 import { submitWord, shuffleLetters } from '@/lib/gameLogic';
-import { getNextPuzzleTime } from '@/lib/puzzleManager';
-import { useAuth } from '@/lib/hooks/useAuth';
 import { useGameState } from '@/lib/hooks/useGameState';
 import { usePuzzle } from '@/lib/hooks/usePuzzle';
-import Menu from '@/components/Menu';
 import FoundWordsList from '@/components/FoundWordsList';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
+type ActiveModal = 'yesterday' | 'definition' | 'hints' | 'howToPlay' | null;
 
 export default function Home() {
-  const { user } = useAuth();
   const [currentWord, setCurrentWord] = useState('');
-  const [message, setMessage] = useState<{text: string; type: 'error' | 'success'} | undefined>();
+  const [message, setMessage] = useState<GameMessage | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>('chronological');
-  const [timeToNextPuzzle, setTimeToNextPuzzle] = useState('');
-  const [isYesterdaysPuzzleModalOpen, setIsYesterdaysPuzzleModalOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<ActiveModal>(null);
   const [selectedWord, setSelectedWord] = useState<string>('');
-  const [isWordDefinitionModalOpen, setIsWordDefinitionModalOpen] = useState(false);
-  const [isHintsModalOpen, setIsHintsModalOpen] = useState(false);
-  const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
 
   const { puzzle, yesterdaysPuzzle, yesterdaysDate, error: puzzleError, retry: retryPuzzle } = usePuzzle();
   const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(puzzle);
@@ -42,23 +34,7 @@ export default function Home() {
     }
   }, [stateError]);
 
-  // Update countdown timer
-  useEffect(() => {
-    const updateTimer = () => {
-      const now = new Date();
-      const next = getNextPuzzleTime();
-      const diff = next.getTime() - now.getTime();
-      
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeToNextPuzzle(`${hours}h ${minutes}m`);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 60000); // Update every minute
-    
-    return () => clearInterval(interval);
-  }, []);
+  const closeModal = useCallback(() => setActiveModal(null), []);
 
   const handleLetterClick = useCallback((letter: string) => {
     setCurrentWord(prev => prev + letter);
@@ -114,7 +90,7 @@ export default function Home() {
 
   const handleWordClick = (word: string) => {
     setSelectedWord(word);
-    setIsWordDefinitionModalOpen(true);
+    setActiveModal('definition');
   };
 
   const handleSubmit = useCallback(async () => {
@@ -196,87 +172,18 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-4 bg-bg text-ink flex flex-col h-screen">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-2 sm:mb-8">
-        {/* Top row with menu, title, info, and score on mobile */}
-        <div className="flex items-center justify-between w-full sm:w-auto">
-          <div className="flex items-center">
-            <Menu 
-              onShowYesterdaysPuzzle={() => setIsYesterdaysPuzzleModalOpen(true)}
-              onShowHints={() => setIsHintsModalOpen(true)}
-              onShowHowToPlay={() => setIsHowToPlayModalOpen(true)}
-              timeToNextPuzzle={timeToNextPuzzle}
-            />
-            <h1 className="text-2xl font-display font-bold leading-none">SpellGarden</h1>
-            <div className="ml-2">
-              <PuzzleInfo 
-                bingoIsPossible={gameState.bingoIsPossible}
-                pangramCount={gameState.pangrams.length}
-                foundPangrams={gameState.foundWords.filter(word => gameState.pangrams.includes(word))}
-                foundWords={gameState.foundWords}
-                centerLetter={gameState.centerLetter}
-                outerLetters={gameState.letters}
-              />
-            </div>
-          </div>
-          {/* Score - visible on mobile only in header */}
-          <div className="sm:hidden text-2xl font-display font-bold min-w-[3ch] text-right">
-            {gameState.score}
-          </div>
-        </div>
-
-        {/* Level indicator row */}
-        <div className="flex items-center justify-center sm:justify-start gap-4 w-full sm:w-auto">
-          <LevelIndicator
-            score={gameState.score}
-            totalPossibleScore={gameState.totalPossibleScore}
-            foundWordsCount={gameState.foundWords.length}
-            totalWords={gameState.validWords.length}
-          />
-          {/* Score - visible on desktop only next to level indicator */}
-          <div className="hidden sm:block text-2xl font-display font-bold min-w-[3ch] text-right">
-            {gameState.score}
-          </div>
-        </div>
-      </div>
+      <GameHeader
+        gameState={gameState}
+        onShowYesterdaysPuzzle={() => setActiveModal('yesterday')}
+        onShowHints={() => setActiveModal('hints')}
+        onShowHowToPlay={() => setActiveModal('howToPlay')}
+      />
 
       {/* Game Container */}
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 md:landscape:max-w-[1400px] md:landscape:grid md:landscape:grid-cols-[1fr_1px_minmax(350px,35%)] md:landscape:gap-x-8">
         {/* Game Board Section */}
         <div className="flex flex-col min-h-0 flex-1">
-          {/* Word Input with Message Container */}
-          <div className="relative mb-2 sm:mb-4 flex justify-center">
-            {/* Absolutely positioned message */}
-            <div className="absolute left-0 right-0 bottom-full mb-1 sm:mb-2">
-              <AnimatePresence>
-                {message && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className={`text-center text-lg font-semibold ${
-                      message.type === 'error' ? 'text-red-400' : 'text-leaf'
-                    }`}
-                  >
-                    {message.text}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <div className="w-full max-w-full sm:max-w-md md:max-w-lg min-h-[2.75rem] sm:min-h-[3.25rem] flex items-center justify-center px-4">
-              {currentWord ? (
-                <div className="font-display text-2xl sm:text-3xl font-bold tracking-wide flex items-baseline">
-                  <span>{currentWord}</span>
-                  <span className="inline-block w-[3px] h-[0.95em] bg-gold ml-[3px] animate-caret" />
-                </div>
-              ) : (
-                <div className="font-display text-lg sm:text-xl text-muted">
-                  Type or click letters
-                </div>
-              )}
-            </div>
-          </div>
+          <WordInput currentWord={currentWord} message={message} />
 
           {/* Letter Grid Container */}
           <div className="flex justify-center items-center">
@@ -291,40 +198,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Control Buttons - Now directly under game board */}
-          <div className="grid grid-cols-2 sm:flex sm:justify-center gap-1.5 sm:gap-4 mt-2 sm:mt-6">
-            <button
-              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-1 sm:order-1"
-              onClick={handleSort}
-            >
-              <SortAscending size={16} weight="duotone" className="text-leaf shrink-0" />
-              {getSortLabel(sortMode)}
-            </button>
-            <button
-              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-2 sm:order-2"
-              onClick={handleShuffle}
-            >
-              <ShuffleIcon size={16} weight="duotone" className="text-leaf shrink-0" />
-              Shuffle
-            </button>
-            <button
-              className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl border border-ink/15 bg-surface hover:bg-surface/70 text-ink transition-colors text-sm sm:text-base whitespace-nowrap order-3 sm:order-3"
-              onClick={handleDelete}
-            >
-              <Backspace size={16} weight="duotone" className="text-leaf shrink-0" />
-              Delete
-            </button>
-            <button
-              className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-7 py-1.5 sm:py-2.5 rounded-2xl bg-gold text-gold-ink font-semibold hover:bg-gold/90 transition-colors text-sm sm:text-base whitespace-nowrap order-4 sm:order-4 ${
-                currentWord.length < 4 ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              onClick={handleSubmit}
-              disabled={currentWord.length < 4}
-            >
-              <ArrowElbowDownLeft size={16} weight="duotone" className="shrink-0" />
-              Enter
-            </button>
-          </div>
+          {/* Control Buttons - directly under game board */}
+          <GameControls
+            sortLabel={getSortLabel(sortMode)}
+            canSubmit={currentWord.length >= 4}
+            onSort={handleSort}
+            onShuffle={handleShuffle}
+            onDelete={handleDelete}
+            onSubmit={handleSubmit}
+          />
 
           {/* Found Words - Mobile Only - Now at the bottom */}
           <div className="md:landscape:hidden flex-1 min-h-0 overflow-y-auto mt-4">
@@ -356,8 +238,8 @@ export default function Home() {
       {/* Modals */}
       {yesterdaysPuzzle && (
         <YesterdaysPuzzleModal
-          isOpen={isYesterdaysPuzzleModalOpen}
-          onClose={() => setIsYesterdaysPuzzleModalOpen(false)}
+          isOpen={activeModal === 'yesterday'}
+          onClose={closeModal}
           date={yesterdaysDate}
           centerLetter={yesterdaysPuzzle.center_letter.toUpperCase()}
           outerLetters={yesterdaysPuzzle.outside_letters.map(l => l.toUpperCase())}
@@ -369,26 +251,24 @@ export default function Home() {
       )}
 
       <WordDefinitionModal
-        isOpen={isWordDefinitionModalOpen}
-        onClose={() => setIsWordDefinitionModalOpen(false)}
+        isOpen={activeModal === 'definition'}
+        onClose={closeModal}
         word={selectedWord}
-        isPangram={gameState?.pangrams.includes(selectedWord) || false}
+        isPangram={gameState.pangrams.includes(selectedWord)}
       />
 
-      {gameState && (
-        <HintsModal
-          isOpen={isHintsModalOpen}
-          onClose={() => setIsHintsModalOpen(false)}
-          validWords={gameState.validWords}
-          foundWords={gameState.foundWords}
-          centerLetter={gameState.centerLetter}
-          outerLetters={gameState.letters}
-        />
-      )}
+      <HintsModal
+        isOpen={activeModal === 'hints'}
+        onClose={closeModal}
+        validWords={gameState.validWords}
+        foundWords={gameState.foundWords}
+        centerLetter={gameState.centerLetter}
+        outerLetters={gameState.letters}
+      />
 
       <HowToPlayModal
-        isOpen={isHowToPlayModalOpen}
-        onClose={() => setIsHowToPlayModalOpen(false)}
+        isOpen={activeModal === 'howToPlay'}
+        onClose={closeModal}
       />
     </main>
   );
