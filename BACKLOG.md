@@ -16,39 +16,15 @@ here.
 
 ## Visual Polish (make it feel like a professional NYT-style game)
 
-### Harsh pure black/white palette
-- **What:** `bg-black text-white` on `<main>` overrides the light/dark CSS variables already defined in `globals.css` (which are otherwise dead code). Pure `#000`/`#fff` reads as a developer default, not a finished game.
-- **Decided direction (design review, Oct 2026):** Staying dark (the user's preference), but refined — "Botanical Minimal, Dark": a near-neutral dark background (not pure `#000`, not a saturated color like the rejected forest-green test direction) with the game's actual color identity kept intact: warm gold center letter, purple/lilac outer letters (the hex grid reads as a flower — center=sun, outer=petals), and found words colored by length as a "garden of blooms" (this mechanic was explicitly called out as something to keep, not flatten to neutral/monochrome). See `DESIGN_VISION.md` for the larger ideas layered on top of this later.
-- **Fix:** Apply the agreed palette through the existing CSS variables instead of hardcoded Tailwind black/white.
-- **Priority:** High — single highest-leverage visual change.
-- **Spotted:** Code review, Oct 2026
-
-### No custom typography
-- **What:** No `next/font` setup anywhere; the whole app runs on the Tailwind system font stack.
-- **Decided direction:** Bricolage Grotesque (display, for the wordmark/score/rank name) + Karla (body/UI), loaded via `next/font` with Google Fonts.
-- **Fix:** Add the font setup and apply it to the relevant elements.
-- **Priority:** High — pairs with the palette change for the biggest "polish" jump.
-- **Spotted:** Code review, Oct 2026
-
-### Emoji used as functional UI
-- **What:** The rank chip (💤 Dormant), the pangram/bingo indicators next to the title, and the Sort button (`⏪`/`🔤`/`📶`) all rely on emoji instead of icons. They render inconsistently across platforms and the sort icons aren't guessable — `⏪` for "chronological" doesn't read as anything in particular.
-- **Fix:** Replace with small SVG icons. Label the sort button with text ("Newest" / "A–Z" / "Length") instead of relying on the icon alone. A soft "duotone" (light fill + stroke) icon style was the preferred treatment in the design review; Phosphor Icons' duotone variant is the closest off-the-shelf match (`react-icons` and `lucide-react` are already dependencies but neither has a duotone mode, so this likely means adding `@phosphor-icons/react`).
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
-### Control button corner-rounding looks like a bug
-- **What:** The leaf-shaped buttons use `rounded-bl-3xl rounded-br-3xl rounded-tr-3xl` (asymmetric rounding meant to suggest a leaf), but in the 2×2 mobile grid the four buttons' rounded corners point in different directions and read as inconsistent/broken rather than intentional.
-- **Decided direction:** Simplify to a consistent rounded-rectangle shape (not a full pill, not the asymmetric leaf) across all four buttons, and give Enter a filled/primary treatment (solid background) while Sort/Shuffle/Delete stay as secondary/outlined — right now all four read as equally weighted, which doesn't communicate that Enter is the primary action.
-- **Fix:** Apply the agreed button treatment.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
-### Word input looks like a disabled form field
-- **What:** The current-word display is a real `<input readOnly>` styled as a grey pill with placeholder text — it looks like a disabled input, and it's a pointless tab stop.
-- **Decided direction:** Large plain letters with a blinking cursor bar instead of an `<input>` — confirmed in the design review as a liked change.
-- **Fix:** Implement it.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
+Palette, typography, the icon-vs-emoji swap, button shape/hierarchy, and the word
+input were designed, implemented, and shipped (PR #15) — "Botanical Minimal, Dark":
+a near-neutral dark background, the gold-center/purple-petal flower grid, the
+rainbow-by-length "garden of blooms" found words, Space Grotesk (display) + Karla
+(body) via `next/font`, and Phosphor duotone icons replacing every emoji in the app.
+(Display font ended up as Space Grotesk, not the originally-floated Bricolage
+Grotesque — Bricolage's capital Q was nearly indistinguishable from an O on the
+letter tiles, a real legibility problem for a word game.) See `DESIGN_VISION.md`
+for the larger structural ideas layered on top of this later.
 
 ### Desktop two-column layout disappears outside landscape
 - **What:** The found-words sidebar and divider are gated behind `md:landscape:` classes. In an ordinary desktop browser window that happens to be taller than wide, the two-column layout vanishes entirely and the game looks like the mobile layout stretched out.

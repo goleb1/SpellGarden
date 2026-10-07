@@ -1,11 +1,11 @@
 import "./globals.css";
 import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Karla } from 'next/font/google';
+import { Space_Grotesk, Karla } from 'next/font/google';
 import { AuthProvider } from "@/lib/contexts/AuthContext";
 
-const bricolageGrotesque = Bricolage_Grotesque({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
+  weight: ['500', '600', '700'],
   variable: '--font-display',
   display: 'swap',
 });
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${bricolageGrotesque.variable} ${karla.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${karla.variable}`}>
       <body>
         <AuthProvider>
           {children}
