@@ -73,7 +73,7 @@ const PangramIndicator = ({
         transition={{ duration: 0.2 }}
       >
         <Flower
-          size={18}
+          size={26}
           weight={isFound || allPangramsFound ? 'duotone' : 'regular'}
           className={allPangramsFound ? 'text-gold' : isFound ? 'text-rose' : 'text-muted'}
         />
@@ -207,9 +207,9 @@ export default function PuzzleInfo({
               transition={{ duration: 0.2 }}
             >
               {hasBingo ? (
-                <Flower size={18} weight="duotone" className="text-gold" />
+                <Flower size={26} weight="duotone" className="text-gold" />
               ) : (
-                <PottedPlant size={18} weight="duotone" className="text-leaf" />
+                <PottedPlant size={26} weight="duotone" className="text-leaf" />
               )}
               {showBingoBurst && <Burst color="bg-gold" />}
             </motion.span>

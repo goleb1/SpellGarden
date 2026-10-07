@@ -211,7 +211,7 @@ export default function Home() {
               onShowHowToPlay={() => setIsHowToPlayModalOpen(true)}
               timeToNextPuzzle={timeToNextPuzzle}
             />
-            <h1 className="text-2xl font-display font-bold">SpellGarden</h1>
+            <h1 className="text-2xl font-display font-bold leading-none">SpellGarden</h1>
             <div className="ml-2">
               <PuzzleInfo 
                 bingoIsPossible={gameState.bingoIsPossible}
