@@ -7,37 +7,46 @@ Context: a full codebase + visual review was done Oct 2026 after months away fro
 Two urgent items it found (stale puzzle schedule, dead dictionary API) were already fixed before
 this list was written, so they're not included below — just the rest of what the review turned up.
 
+Bigger, structural garden-theme ideas (a visible growing plant, a petal-shaped letter
+grid, a literal garden-bed found-words view) came out of the same design pass but need
+real sketching before they're ready to be tasks — see `DESIGN_VISION.md` instead of
+here.
+
 ---
 
 ## Visual Polish (make it feel like a professional NYT-style game)
 
 ### Harsh pure black/white palette
-- **What:** `bg-black text-white` on `<main>` overrides the light/dark CSS variables already defined in `globals.css` (which are otherwise dead code). Pure `#000`/`#fff` reads as a developer default, not a finished game — especially for something garden-themed.
-- **Fix:** Design a warm, paper-like palette (soft off-white background, deep green ink, muted accent colors) and apply it through the existing CSS variables instead of hardcoded Tailwind black/white.
+- **What:** `bg-black text-white` on `<main>` overrides the light/dark CSS variables already defined in `globals.css` (which are otherwise dead code). Pure `#000`/`#fff` reads as a developer default, not a finished game.
+- **Decided direction (design review, Oct 2026):** Staying dark (the user's preference), but refined — "Botanical Minimal, Dark": a near-neutral dark background (not pure `#000`, not a saturated color like the rejected forest-green test direction) with the game's actual color identity kept intact: warm gold center letter, purple/lilac outer letters (the hex grid reads as a flower — center=sun, outer=petals), and found words colored by length as a "garden of blooms" (this mechanic was explicitly called out as something to keep, not flatten to neutral/monochrome). See `DESIGN_VISION.md` for the larger ideas layered on top of this later.
+- **Fix:** Apply the agreed palette through the existing CSS variables instead of hardcoded Tailwind black/white.
 - **Priority:** High — single highest-leverage visual change.
 - **Spotted:** Code review, Oct 2026
 
 ### No custom typography
 - **What:** No `next/font` setup anywhere; the whole app runs on the Tailwind system font stack.
-- **Fix:** Add one display/serif font for the wordmark, score, and rank name, and a clean sans for UI text, loaded via `next/font`.
+- **Decided direction:** Bricolage Grotesque (display, for the wordmark/score/rank name) + Karla (body/UI), loaded via `next/font` with Google Fonts.
+- **Fix:** Add the font setup and apply it to the relevant elements.
 - **Priority:** High — pairs with the palette change for the biggest "polish" jump.
 - **Spotted:** Code review, Oct 2026
 
 ### Emoji used as functional UI
 - **What:** The rank chip (💤 Dormant), the pangram/bingo indicators next to the title, and the Sort button (`⏪`/`🔤`/`📶`) all rely on emoji instead of icons. They render inconsistently across platforms and the sort icons aren't guessable — `⏪` for "chronological" doesn't read as anything in particular.
-- **Fix:** Replace with small SVG icons (an icon set is already a dependency — `react-icons` or `lucide-react`). Label the sort button with text ("Newest" / "A–Z" / "Length") instead of relying on the icon alone.
+- **Fix:** Replace with small SVG icons. Label the sort button with text ("Newest" / "A–Z" / "Length") instead of relying on the icon alone. A soft "duotone" (light fill + stroke) icon style was the preferred treatment in the design review; Phosphor Icons' duotone variant is the closest off-the-shelf match (`react-icons` and `lucide-react` are already dependencies but neither has a duotone mode, so this likely means adding `@phosphor-icons/react`).
 - **Priority:** Medium
 - **Spotted:** Code review, Oct 2026
 
 ### Control button corner-rounding looks like a bug
 - **What:** The leaf-shaped buttons use `rounded-bl-3xl rounded-br-3xl rounded-tr-3xl` (asymmetric rounding meant to suggest a leaf), but in the 2×2 mobile grid the four buttons' rounded corners point in different directions and read as inconsistent/broken rather than intentional.
-- **Fix:** Either commit fully to the leaf shape with one consistent orientation across all four buttons, or simplify to plain pill buttons.
+- **Decided direction:** Simplify to a consistent rounded-rectangle shape (not a full pill, not the asymmetric leaf) across all four buttons, and give Enter a filled/primary treatment (solid background) while Sort/Shuffle/Delete stay as secondary/outlined — right now all four read as equally weighted, which doesn't communicate that Enter is the primary action.
+- **Fix:** Apply the agreed button treatment.
 - **Priority:** Medium
 - **Spotted:** Code review, Oct 2026
 
 ### Word input looks like a disabled form field
 - **What:** The current-word display is a real `<input readOnly>` styled as a grey pill with placeholder text — it looks like a disabled input, and it's a pointless tab stop.
-- **Fix:** Render the typed letters as large plain text with a blinking cursor (closer to the NYT Spelling Bee treatment) instead of an `<input>`.
+- **Decided direction:** Large plain letters with a blinking cursor bar instead of an `<input>` — confirmed in the design review as a liked change.
+- **Fix:** Implement it.
 - **Priority:** Medium
 - **Spotted:** Code review, Oct 2026
 
