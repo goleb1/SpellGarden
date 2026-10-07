@@ -255,8 +255,8 @@ export default function YesterdaysPuzzleModal({
                                 onClick={() => handleWordClick(word)}
                                 className={`px-2.5 py-1 rounded-full text-sm cursor-pointer hover:opacity-80 transition-opacity ${
                                   isPangram
-                                    ? (isFound ? 'bg-gradient-to-r from-gold to-rose text-[#2A1208] shadow-lg shadow-rose/20 font-semibold' : 'bg-surface border border-rose/50 text-muted')
-                                    : (isFound ? 'bg-leaf text-bg' : 'bg-surface text-muted')
+                                    ? (isFound ? 'bg-gradient-to-r from-gold to-rose text-[#2A1208] shadow-lg shadow-rose/20 font-semibold' : 'bg-ink/10 border border-rose/50 text-muted')
+                                    : (isFound ? 'bg-leaf text-bg' : 'bg-ink/10 text-muted')
                                 }`}
                               >
                                 {word.toUpperCase()}
