@@ -1,4 +1,4 @@
-import { getTodaysPuzzle } from './puzzleManager';
+import type { Puzzle } from './puzzleManager';
 
 interface GameState {
   centerLetter: string;
@@ -106,9 +106,8 @@ export const shuffleLetters = (letters: string[]): string[] => {
   return [...letters].sort(() => Math.random() - 0.5);
 };
 
-// Get today's game state
-export const getInitialGameState = (): GameState => {
-  const puzzle = getTodaysPuzzle();
+// Get the starting game state for a puzzle
+export const getInitialGameState = (puzzle: Puzzle): GameState => {
   return {
     centerLetter: puzzle.center_letter.toUpperCase(),
     letters: puzzle.outside_letters.map(l => l.toUpperCase()),
