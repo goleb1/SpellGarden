@@ -80,18 +80,6 @@ This section is the current top priority (owner feedback, Oct 2026).
 - **Priority:** Low
 - **Spotted:** Code review, Oct 2026
 
-### Duplicate `GameState` type definitions that have already drifted
-- **What:** `gameLogic.ts` and `useGameState.ts` each declare their own `GameState` interface. They're not identical (the hook's version has `lastUpdated`, the other doesn't).
-- **Fix:** Define it once in a shared location and import it in both places.
-- **Priority:** Low
-- **Spotted:** Code review, Oct 2026
-
-### `useGameState` doesn't wait for auth to resolve
-- **What:** On mount, `user` is `null` before Firebase auth resolves, so the hook reads (and writes) localStorage as a guest, then re-runs once auth lands. Signed-in players can see a flash of guest state before their real progress loads.
-- **Fix:** Gate the initial load on an `authLoading` flag from `useAuth` before reading/writing state.
-- **Priority:** Low-Medium
-- **Spotted:** Code review, Oct 2026
-
 ### Hint Level 3 fetches definitions one at a time
 - **What:** `generateWordClues` awaits one `/api/definition/:word` call per unfound word, sequentially. The new API route is fast and cached (~0.3s/word measured), so this is no longer the 15-minute stall it used to be, but on a puzzle with 50-70 words it can still take a noticeable number of seconds before Level 3 is ready.
 - **Fix:** Fetch with a small concurrency cap (e.g. 5-6 at a time), or better, load each card's definition lazily when the player taps it rather than pre-fetching the whole list.

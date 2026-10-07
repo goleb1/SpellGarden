@@ -31,6 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       try {
         setUser(user);
+        // We now know who is playing, so the game can load their progress
+        // without waiting on the user-record update below.
+        setLoading(false);
         if (user) {
           // Create or update user document in Firestore
           const userRef = doc(db, "users", user.uid);
@@ -53,8 +56,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         console.error("Error in auth state change:", err);
         setError("Failed to update user data. Please try again.");
-      } finally {
-        setLoading(false);
       }
     });
 
