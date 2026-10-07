@@ -2,24 +2,6 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
 
-// Check if all required environment variables are present (client-side only)
-if (typeof window !== 'undefined') {
-  const requiredEnvVars = [
-    'NEXT_PUBLIC_FIREBASE_API_KEY',
-    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
-    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
-    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
-    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
-    'NEXT_PUBLIC_FIREBASE_APP_ID'
-  ];
-
-  requiredEnvVars.forEach(varName => {
-    if (!process.env[varName]) {
-      console.error(`Missing required environment variable: ${varName}`);
-    }
-  });
-}
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -28,6 +10,17 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
+
+// Check that every setting is present (client-side only). Each value has to
+// be read by its full name above: Next.js only fills in NEXT_PUBLIC_ values
+// in the browser when they are written out literally.
+if (typeof window !== 'undefined') {
+  Object.entries(firebaseConfig).forEach(([key, value]) => {
+    if (!value) {
+      console.error(`Missing Firebase config value: ${key}`);
+    }
+  });
+}
 
 let app;
 try {

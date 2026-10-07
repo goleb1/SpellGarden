@@ -30,14 +30,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       try {
-        console.log("Auth state changed:", user ? "User logged in" : "User logged out");
         setUser(user);
         if (user) {
           // Create or update user document in Firestore
           const userRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(userRef);
           if (!docSnap.exists()) {
-            console.log("Creating new user document");
             await setDoc(userRef, {
               uid: user.uid,
               displayName: user.displayName,
@@ -46,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               lastLogin: new Date().toISOString(),
             });
           } else {
-            console.log("Updating user last login");
             await setDoc(userRef, {
               lastLogin: new Date().toISOString(),
             }, { merge: true });
@@ -66,17 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      console.log("Starting Google sign in process...");
       setError(null);
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({
         prompt: 'select_account'
       });
-      
-      console.log("Initiating popup...");
-      const result = await signInWithPopup(auth, provider);
-      console.log("Sign in successful:", result.user.email);
-      
+      await signInWithPopup(auth, provider);
     } catch (err: any) {
       console.error("Error signing in with Google:", err);
       if (err.code === 'auth/popup-blocked') {
@@ -93,10 +85,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      console.log("Starting sign out process...");
       setError(null);
       await firebaseSignOut(auth);
-      console.log("Sign out successful");
     } catch (err) {
       console.error("Error signing out:", err);
       setError("Failed to sign out. Please try again.");

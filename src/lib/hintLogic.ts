@@ -1,3 +1,5 @@
+import type { WordDefinition } from './dictionaryService';
+
 // Level 1: Letter count grid
 export interface LetterCountGrid {
   [letter: string]: {
@@ -64,11 +66,15 @@ export function generateTwoLetterHints(
   return twoLetterCounts;
 }
 
+interface DefinitionSource {
+  getDefinition(word: string): Promise<WordDefinition | null>;
+}
+
 // Enhanced definition service that uses the real dictionary API
 export class EnhancedDefinitionService {
-  private dictionaryService: any; // Will be imported from dictionaryService
+  private dictionaryService: DefinitionSource;
 
-  constructor(dictionaryService: any) {
+  constructor(dictionaryService: DefinitionSource) {
     this.dictionaryService = dictionaryService;
   }
 
