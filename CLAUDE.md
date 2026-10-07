@@ -27,6 +27,9 @@ SpellGarden is a Next.js 14 word puzzle game inspired by NYT Spelling Bee, built
 - Game state is persisted via Firebase for authenticated users or localStorage for guests
 
 **Key Components:**
+- `GameHeader` - Menu, title, puzzle info, level bar and score
+- `WordInput` - The word being typed and the success/error message
+- `GameControls` - Sort, Shuffle, Delete and Enter buttons
 - `LetterGrid` - Interactive hexagonal letter grid with center/outer letters
 - `LevelIndicator` - Progress tracking based on score vs total possible score
 - `YesterdaysPuzzleModal` - Shows previous day's puzzle solutions
