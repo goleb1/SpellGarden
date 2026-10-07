@@ -9,16 +9,6 @@ this list was written, so they're not included below — just the rest of what t
 
 ---
 
-## Bugs
-
-### `npm run populate-words` is broken — blocked, needs your input
-- **What:** The script runs `ts-node src/scripts/populateWordList.ts`, but `src/scripts/` doesn't exist in the repo. CLAUDE.md and `populate-words.js` both still reference it. Checked the full git history and every branch (including remotes) — the generator script was never actually committed to this repo at any point. The commits that refreshed `puzzle_sets.json` (e.g. "Updated puzzle sets with new puzzle generation script! Woohoo!", "new logic for puzzle generation to reduce average puzzle size and increase variation") only ever show the output JSON changing, so whatever generated it ran somewhere outside this repo.
-- **Fix:** Needs your input before writing anything — where did the puzzle sets actually get regenerated from recently (another repo, a one-off script, a Claude/ChatGPT session)? Recreating the generator from scratch means guessing at curation logic (letter selection, difficulty/variation balancing) you clearly tuned deliberately, which isn't something to invent blind for a game built specifically for you two.
-- **Priority:** Medium — blocks the documented way to generate new puzzle sets, but not urgent since the schedule runs through Feb 2027.
-- **Spotted:** Code review, Oct 2026
-
----
-
 ## Visual Polish (make it feel like a professional NYT-style game)
 
 ### Harsh pure black/white palette
