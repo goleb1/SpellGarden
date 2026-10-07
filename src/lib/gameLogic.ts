@@ -18,6 +18,13 @@ export const calculateWordScore = (word: string): number => {
   return word.length;
 };
 
+const BINGO_BONUS = 10;
+
+// A bingo is having at least one found word starting with each of the 7 letters
+export const hasBingo = (foundWords: string[], allLetters: string[]): boolean => {
+  const startingLetters = new Set(foundWords.map(word => word[0]?.toLowerCase()));
+  return allLetters.every(letter => startingLetters.has(letter.toLowerCase()));
+};
 
 export const submitWord = async (
   word: string, 
@@ -92,12 +99,22 @@ export const submitWord = async (
   // Check if it's a pangram
   const isPangram = gameState.pangrams.includes(word);
   const pangramBonus = isPangram ? 10 : 0;
-  const totalScore = wordScore + pangramBonus;
+
+  // Check if this word completes the bingo. The puzzle's total score only
+  // includes the bonus when a bingo is possible, so only award it then.
+  const allLetters = [gameState.centerLetter, ...gameState.letters];
+  const completesBingo = gameState.bingoIsPossible
+    && !hasBingo(gameState.foundWords, allLetters)
+    && hasBingo([...gameState.foundWords, word], allLetters);
+  const bingoBonus = completesBingo ? BINGO_BONUS : 0;
+
+  const totalScore = wordScore + pangramBonus + bingoBonus;
+  const label = [isPangram && 'Pangram!', completesBingo && 'Bingo!'].filter(Boolean).join(' ');
 
   return {
     isValid: true,
     score: totalScore,
-    message: isPangram ? `Pangram! +${totalScore} points` : `+${totalScore} points`,
+    message: label ? `${label} +${totalScore} points` : `+${totalScore} points`,
     messageType: 'success'
   };
 };
