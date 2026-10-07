@@ -5,6 +5,7 @@ import LetterGrid from '@/components/LetterGrid';
 import GameHeader from '@/components/GameHeader';
 import WordInput, { type GameMessage } from '@/components/WordInput';
 import GameControls from '@/components/GameControls';
+import GameSkeleton from '@/components/GameSkeleton';
 import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import WordDefinitionModal from '@/components/WordDefinitionModal';
 import HintsModal from '@/components/HintsModal';
@@ -163,11 +164,7 @@ export default function Home() {
   }
 
   if (stateLoading || !gameState) {
-    return (
-      <div className="min-h-screen bg-bg text-ink flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
-      </div>
-    );
+    return <GameSkeleton />;
   }
 
   return (
