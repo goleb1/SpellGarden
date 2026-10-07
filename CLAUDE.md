@@ -8,7 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build production bundle
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint to check code quality
-- `npm run populate-words` - Run script to generate new puzzle sets from word list
+
+Puzzle generation does not happen in this repo. `puzzle_sets.json` is produced by a
+separate dictionary/puzzle-generation project and dropped in here as a finished
+output file whenever a new batch of puzzles is ready.
 
 ## Project Architecture
 
@@ -62,7 +65,6 @@ src/
 
 ### Development Notes
 
-- Puzzle generation script uses `an-array-of-english-words` package
 - Game supports both authenticated (Firestore) and guest (localStorage) modes
 - Responsive design with separate mobile/desktop layouts
 - Framer Motion used for animations and transitions

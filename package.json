@@ -6,13 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "populate-words": "NODE_PATH=./src npx ts-node -P tsconfig.json src/scripts/populateWordList.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
-    "an-array-of-english-words": "^2.0.0",
     "date-fns": "^3.6.0",
     "firebase": "^10.13.0",
     "firebase-admin": "^13.1.0",
@@ -33,14 +31,12 @@
     "eslint-config-next": "14.2.7",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "description": "A word puzzle game inspired by the NYT Spelling Bee, with a garden theme. Create words using the given letters, with the center letter being required in every word.",
-  "main": "populate-words.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/goleb1/SpellGarden.git"
