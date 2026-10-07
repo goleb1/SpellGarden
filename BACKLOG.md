@@ -11,22 +11,10 @@ this list was written, so they're not included below — just the rest of what t
 
 ## Bugs
 
-### `npm run populate-words` is broken
-- **What:** The script runs `ts-node src/scripts/populateWordList.ts`, but `src/scripts/` doesn't exist in the repo. CLAUDE.md and `populate-words.js` both still reference it.
-- **Fix:** Either restore the script (check git history / an old branch for it) or update the command + docs to point at wherever puzzle generation actually lives now.
-- **Priority:** Medium — blocks the documented way to generate new puzzle sets.
-- **Spotted:** Code review, Oct 2026
-
-### Dead second Next config file with a risky rewrite in it
-- **What:** Both `next.config.js` and `next.config.mjs` exist. Next only loads the `.js` one, so `.mjs` is silently ignored — but it still contains a `rewrites()` proxying `/api/:path*` to `https://api.openai.com/:path*` and `dangerouslyAllowSVG: true`. Harmless only because it's dead; confusing and risky if anyone ever renames the live config.
-- **Fix:** Delete `next.config.mjs`. If the OpenAI proxy or SVG image support is actually needed, merge it into `next.config.js` deliberately. The `env:` block in `next.config.js` is also redundant — Next inlines `NEXT_PUBLIC_*` vars automatically.
-- **Priority:** Low — not currently causing harm, just dead/confusing config.
-- **Spotted:** Code review, Oct 2026
-
-### `next/head` usage in `page.tsx` does nothing
-- **What:** `page.tsx` imports and renders `<Head>` from `next/head`, which is a Pages Router API and a no-op in the App Router. The landscape-rotation CSS hack and viewport meta tag inside it never actually apply.
-- **Fix:** Delete the `<Head>` block. If the landscape-rotation behavior is still wanted, implement it via a CSS file or `viewport`/`metadata` exports in `layout.tsx`.
-- **Priority:** Low — dead code, but worth confirming landscape mode actually behaves the way you want once it's gone.
+### `npm run populate-words` is broken — blocked, needs your input
+- **What:** The script runs `ts-node src/scripts/populateWordList.ts`, but `src/scripts/` doesn't exist in the repo. CLAUDE.md and `populate-words.js` both still reference it. Checked the full git history and every branch (including remotes) — the generator script was never actually committed to this repo at any point. The commits that refreshed `puzzle_sets.json` (e.g. "Updated puzzle sets with new puzzle generation script! Woohoo!", "new logic for puzzle generation to reduce average puzzle size and increase variation") only ever show the output JSON changing, so whatever generated it ran somewhere outside this repo.
+- **Fix:** Needs your input before writing anything — where did the puzzle sets actually get regenerated from recently (another repo, a one-off script, a Claude/ChatGPT session)? Recreating the generator from scratch means guessing at curation logic (letter selection, difficulty/variation balancing) you clearly tuned deliberately, which isn't something to invent blind for a game built specifically for you two.
+- **Priority:** Medium — blocks the documented way to generate new puzzle sets, but not urgent since the schedule runs through Feb 2027.
 - **Spotted:** Code review, Oct 2026
 
 ---
