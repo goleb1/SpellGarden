@@ -39,7 +39,7 @@ for the larger structural ideas layered on top of this later.
 - **Spotted:** Code review, Oct 2026
 
 ### Nothing to share — no OG image, manifest, or share card
-- **What:** `public/` only contains the default `next.svg`/`vercel.svg`. No Open Graph image, no `manifest.json`, no apple-touch-icon. Pasting the link anywhere shows a blank preview card.
+- **What:** `public/` is empty. No Open Graph image, no `manifest.json`, no apple-touch-icon. Pasting the link anywhere shows a blank preview card.
 - **Fix:** Add an OG image, web manifest, and touch icons. A Wordle-style "share your score" grid could follow later.
 - **Priority:** Low — an easy one, but the game is mostly played by two people right now, so sharing isn't a focus.
 - **Spotted:** Code review, Oct 2026
@@ -98,26 +98,10 @@ This section is the current top priority (owner feedback, Oct 2026).
 - **Priority:** Low — works fine now, just not optimal.
 - **Spotted:** Code review, Oct 2026
 
-### Dead code and files to remove
-- `src/lib/userPreferences.ts` — `UserPreferencesManager` has zero call sites anywhere in the app.
-- `next.config.mjs`, `populate-words.js` (once the script above is fixed/removed), `public/next.svg`, `public/vercel.svg` — template leftovers.
-- `.cursorrules` — describes an `src/app/components` / `src/app/lib` layout that doesn't match the actual `src/components` / `src/lib` structure in this repo.
-- **Priority:** Low
-- **Spotted:** Code review, Oct 2026
-
-### Unused dependencies
-- **What:** `@headlessui/react`, `@heroicons/react`, `lucide-react`, `react-markdown`, `date-fns`, and `firebase-admin` (a server-only SDK currently in production `dependencies`) have no references in `src/`. `react-icons` is pulled in for a single icon (`IoClose`). `an-array-of-english-words` is a build-time-only dependency and belongs in `devDependencies`.
-- **Fix:** Remove unused packages; move `an-array-of-english-words` to devDependencies; either remove `firebase-admin` or move it to devDependencies if it's only used by a local script.
-- **Priority:** Low
-- **Spotted:** Code review, Oct 2026
-
-### Misc small cleanup
-- `package.json` name is still `"template-2"` from the starter template.
-- Ten `console.log` calls ship to production, including user emails in `AuthContext.tsx` on every sign-in.
-- `EnhancedDefinitionService` (`hintLogic.ts`) types its one dependency as `any`.
-- `firebase.ts` logs six "Missing required environment variable" errors in the browser console on every load even when the variables are set — the check reads `process.env[varName]` dynamically, which never works in the browser. False alarm, but noisy.
-- README and CLAUDE.md both describe a bingo bonus of +10 points, but `gameLogic.ts` has no bingo scoring logic at all — docs and code have drifted.
-- **Priority:** Low
+### Bingo bonus is promised but not scored
+- **What:** The How to Play screen, README and CLAUDE.md all say a bingo earns +10 points, but `gameLogic.ts` has no bingo scoring at all. Players are told about a bonus they never get.
+- **Fix:** Owner decision needed: either add the bonus (and confirm `total_score` in `puzzle_sets.json` accounts for it), or remove the claim from the app and docs.
+- **Priority:** Low-Medium
 - **Spotted:** Code review, Oct 2026
 
 ---

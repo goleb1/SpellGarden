@@ -38,7 +38,6 @@ export const useGameState = (puzzle: Puzzle | null) => {
         });
         // Clear local storage after successful migration
         localStorage.removeItem(`gameState_${puzzleId}`);
-        console.log('Successfully migrated local storage to Firestore');
       }
     } catch (err) {
       console.error('Error migrating local storage to Firestore:', err);
