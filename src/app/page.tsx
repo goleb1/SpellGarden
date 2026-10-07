@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flower, SortAscending, Shuffle as ShuffleIcon, Backspace, ArrowElbowDownLeft } from '@phosphor-icons/react';
+import { SortAscending, Shuffle as ShuffleIcon, Backspace, ArrowElbowDownLeft } from '@phosphor-icons/react';
 import LetterGrid from '@/components/LetterGrid';
 import LevelIndicator from '@/components/LevelIndicator';
 import PuzzleInfo from '@/components/PuzzleInfo';
@@ -211,10 +211,7 @@ export default function Home() {
               onShowHowToPlay={() => setIsHowToPlayModalOpen(true)}
               timeToNextPuzzle={timeToNextPuzzle}
             />
-            <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-              SpellGarden
-              <Flower size={20} weight="duotone" className="text-petal-found" />
-            </h1>
+            <h1 className="text-2xl font-display font-bold">SpellGarden</h1>
             <div className="ml-2">
               <PuzzleInfo 
                 bingoIsPossible={gameState.bingoIsPossible}
