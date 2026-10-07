@@ -32,53 +32,45 @@ for the larger structural ideas layered on top of this later.
 - **Priority:** Medium — likely the actual cause of the oddly empty desktop screenshot from the review.
 - **Spotted:** Code review, Oct 2026
 
-### Level progress bar is misleading
-- **What:** `LevelIndicator` fills the bar based on progress *within the current rank*, not overall score vs. total. At 5/182 points the bar can render over 50% full because that's most of the way through the first (tiny) rank band. Players will read it as overall completion.
-- **Fix:** Either show overall progress with rank ticks marked along the full bar, or make the per-rank framing explicit in the UI (e.g. a secondary "X / Y to next rank" label).
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
 ### Bare spinner loading screen
 - **What:** While `useGameState` loads, the whole page is replaced by a spinner on a black screen.
 - **Fix:** Render a skeleton of the board/header shape instead, so the layout doesn't pop in.
-- **Priority:** Low
+- **Priority:** Medium
 - **Spotted:** Code review, Oct 2026
 
 ### Nothing to share — no OG image, manifest, or share card
 - **What:** `public/` only contains the default `next.svg`/`vercel.svg`. No Open Graph image, no `manifest.json`, no apple-touch-icon. Pasting the link anywhere shows a blank preview card.
-- **Fix:** Add an OG image, web manifest, and touch icons. Consider a Wordle-style "share your score" grid as a follow-up — for a daily game that spreads by word of mouth, this is probably the single highest-value feature addition.
-- **Priority:** Medium-High for growth, even though it's not a "bug"
+- **Fix:** Add an OG image, web manifest, and touch icons. A Wordle-style "share your score" grid could follow later.
+- **Priority:** Low — an easy one, but the game is mostly played by two people right now, so sharing isn't a focus.
 - **Spotted:** Code review, Oct 2026
 
 ---
 
 ## Accessibility
 
+Low priority overall — the game is mostly played by two people right now.
+
 ### Modals and messages aren't accessible
 - **What:** No modal has `role="dialog"`, Escape doesn't close any of them, there's no focus trap, and the success/error message (`page.tsx`) has no `aria-live` region so screen readers never announce it.
 - **Fix:** Add `role="dialog"` + `aria-modal`, an Escape key handler, basic focus trapping (or a small headless-UI-style primitive — `@headlessui/react` is already a dependency and unused elsewhere), and `aria-live="polite"` on the message container.
-- **Priority:** Medium
+- **Priority:** Low
 - **Spotted:** Code review, Oct 2026
 
-### Global `user-select: none` and locked pinch-zoom
-- **What:** `globals.css` sets `user-select: none` on every element, so players can't copy a found word out. `layout.tsx` sets `maximumScale: 1, userScalable: false`, blocking pinch-zoom site-wide, including for players who need it.
-- **Fix:** Scope `user-select: none` to the letter grid/buttons only, not globally. Reconsider the zoom lock, or at least don't disable it on text-heavy screens like the How to Play modal.
-- **Priority:** Low-Medium
+### Global `user-select: none`
+- **What:** `globals.css` sets `user-select: none` on every element, so players can't copy a found word out.
+- **Fix:** Scope `user-select: none` to the letter grid/buttons only, not globally.
+- **Priority:** Low
 - **Spotted:** Code review, Oct 2026
 
 ---
 
 ## Code Simplification / Tech Debt
 
-### Full puzzle schedule is shipped to every client
-- **What:** `puzzle_sets.json` (381 puzzles, growing) is imported directly into `puzzleManager.ts`, which runs client-side — every visitor downloads every future day's puzzle and answers in the initial JS bundle. This is almost certainly the main contributor to the "unused JavaScript" Lighthouse finding already in this backlog.
-- **Fix:** Move puzzle lookup into a server-only module or route handler (`src/app/api/puzzle/route.ts`) that reads the JSON on the server and returns only the requested day's puzzle to the client.
-- **Priority:** Medium-High — correctness concern (answers are inspectable in devtools) as well as performance.
-- **Spotted:** Code review, Oct 2026
+This section is the current top priority (owner feedback, Oct 2026).
 
 ### `page.tsx` is doing too much
-- **What:** 400+ lines, ten pieces of `useState`, six separate modal-open booleans, and `getInitialGameState()` called fresh on every render.
-- **Fix:** Extract `<GameHeader>`, `<WordInput>`, and `<GameControls>` components; collapse the modal booleans into one `activeModal: 'yesterday' | 'definition' | 'hints' | 'howToPlay' | null` field; memoize or hoist the initial state call.
+- **What:** 400+ lines, ten pieces of `useState`, and six separate modal-open booleans.
+- **Fix:** Extract `<GameHeader>`, `<WordInput>`, and `<GameControls>` components; collapse the modal booleans into one `activeModal: 'yesterday' | 'definition' | 'hints' | 'howToPlay' | null` field.
 - **Priority:** Medium
 - **Spotted:** Code review, Oct 2026
 
@@ -108,7 +100,6 @@ for the larger structural ideas layered on top of this later.
 
 ### Dead code and files to remove
 - `src/lib/userPreferences.ts` — `UserPreferencesManager` has zero call sites anywhere in the app.
-- `setTestPuzzleIndex` in `puzzleManager.ts` — exported but never called; CLAUDE.md's "Testing Different Puzzles" section references it, so either wire it up to something (a dev-only query param or menu toggle) or drop both the function and the doc line.
 - `next.config.mjs`, `populate-words.js` (once the script above is fixed/removed), `public/next.svg`, `public/vercel.svg` — template leftovers.
 - `.cursorrules` — describes an `src/app/components` / `src/app/lib` layout that doesn't match the actual `src/components` / `src/lib` structure in this repo.
 - **Priority:** Low
@@ -124,6 +115,7 @@ for the larger structural ideas layered on top of this later.
 - `package.json` name is still `"template-2"` from the starter template.
 - Ten `console.log` calls ship to production, including user emails in `AuthContext.tsx` on every sign-in.
 - `EnhancedDefinitionService` (`hintLogic.ts`) types its one dependency as `any`.
+- `firebase.ts` logs six "Missing required environment variable" errors in the browser console on every load even when the variables are set — the check reads `process.env[varName]` dynamically, which never works in the browser. False alarm, but noisy.
 - README and CLAUDE.md both describe a bingo bonus of +10 points, but `gameLogic.ts` has no bingo scoring logic at all — docs and code have drifted.
 - **Priority:** Low
 - **Spotted:** Code review, Oct 2026
@@ -133,8 +125,8 @@ for the larger structural ideas layered on top of this later.
 ## Performance (More involved, investigate first)
 
 ### Reduce unused JavaScript (~83 KiB / ~450ms savings)
-- **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load, plus the full `puzzle_sets.json` import described above.
-- **Fix:** First, investigate with `next build --analyze` (requires adding `@next/bundle-analyzer` as a dev dependency). Then look at lazy-loading modals (`dynamic(() => import(...))`), deferring Firebase initialization until it's actually needed, and moving the puzzle data server-side (see Tech Debt section above — likely the biggest single win here).
+- **What:** Lighthouse flags 83 KiB of unused JavaScript, with an estimated 450ms LCP improvement if deferred. Likely caused by Firebase and Framer Motion being loaded eagerly on page load. (The full `puzzle_sets.json` import was also a contributor; that was moved server-side in Oct 2026, cutting the page's JS from 135 kB to 78 kB. Re-run Lighthouse before doing more here.)
+- **Fix:** First, investigate with `next build --analyze` (requires adding `@next/bundle-analyzer` as a dev dependency). Then look at lazy-loading modals (`dynamic(() => import(...))`), and deferring Firebase initialization until it's actually needed.
 - **Priority:** Low-Medium — meaningful load time improvement, especially on mobile.
 - **Spotted:** Lighthouse audit, Feb 2026
 
@@ -153,3 +145,15 @@ for the larger structural ideas layered on top of this later.
 - **Fix:** These are dev-only and have zero production impact. Revisit naturally when upgrading ESLint to a newer major version.
 - **Priority:** Low — dev-only, no production impact. Safe to defer indefinitely.
 - **Spotted:** `npm audit`, Feb 2026
+
+---
+
+## Decided Against (don't re-raise)
+
+### Pinch-zoom lock stays
+- `layout.tsx` sets `maximumScale: 1, userScalable: false` on purpose. The game is played mostly on an iPad, and accidental zooming kept breaking the layout mid-game. Keep the page non-zoomable.
+- **Decided:** Oct 2026
+
+### Level progress bar stays per-rank
+- The review flagged the bar as misleading because it fills within the current rank rather than showing overall score. Owner's call: it reads clearly as progress toward the next rank, and an extra label would clutter the screen. Only revisit if it turns out to confuse real players.
+- **Decided:** Oct 2026

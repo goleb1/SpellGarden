@@ -3,6 +3,7 @@ import { useAuth } from "./useAuth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { getInitialGameState } from "../gameLogic";
+import type { Puzzle } from "../puzzleManager";
 
 interface GameState {
   foundWords: string[];
@@ -17,8 +18,9 @@ interface GameState {
   id: string;
 }
 
-export const useGameState = (puzzleId: string) => {
+export const useGameState = (puzzle: Puzzle | null) => {
   const { user } = useAuth();
+  const puzzleId = puzzle?.id;
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +47,13 @@ export const useGameState = (puzzleId: string) => {
   }, [puzzleId, user]);
 
   useEffect(() => {
+    // Wait for the puzzle to arrive from the server
+    if (!puzzle) return;
+
     const loadState = async () => {
       try {
         // Get the initial game state from puzzle data
-        const baseState = getInitialGameState();
+        const baseState = getInitialGameState(puzzle);
         let state = {
           ...baseState,
           lastUpdated: new Date().toISOString(),
@@ -113,7 +118,7 @@ export const useGameState = (puzzleId: string) => {
     };
 
     loadState();
-  }, [user, puzzleId, migrateLocalToFirestore]);
+  }, [user, puzzle, puzzleId, migrateLocalToFirestore]);
 
   const updateState = async (newState: Partial<GameState>) => {
     if (!gameState) return;

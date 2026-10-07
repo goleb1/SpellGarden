@@ -10,18 +10,15 @@ import YesterdaysPuzzleModal from '@/components/YesterdaysPuzzleModal';
 import WordDefinitionModal from '@/components/WordDefinitionModal';
 import HintsModal from '@/components/HintsModal';
 import HowToPlayModal from '@/components/HowToPlayModal';
-import { submitWord, shuffleLetters, getInitialGameState } from '@/lib/gameLogic';
-import { getNextPuzzleTime, getPuzzleForDate } from '@/lib/puzzleManager';
+import { submitWord, shuffleLetters } from '@/lib/gameLogic';
+import { getNextPuzzleTime } from '@/lib/puzzleManager';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useGameState } from '@/lib/hooks/useGameState';
+import { usePuzzle } from '@/lib/hooks/usePuzzle';
 import Menu from '@/components/Menu';
 import FoundWordsList from '@/components/FoundWordsList';
 
 type SortMode = 'alphabetical' | 'length' | 'chronological';
-
-interface YesterdaysPuzzleData extends ReturnType<typeof getPuzzleForDate> {
-  date: Date;
-}
 
 export default function Home() {
   const { user } = useAuth();
@@ -31,14 +28,13 @@ export default function Home() {
   const [sortMode, setSortMode] = useState<SortMode>('chronological');
   const [timeToNextPuzzle, setTimeToNextPuzzle] = useState('');
   const [isYesterdaysPuzzleModalOpen, setIsYesterdaysPuzzleModalOpen] = useState(false);
-  const [yesterdaysPuzzle, setYesterdaysPuzzle] = useState<YesterdaysPuzzleData | null>(null);
   const [selectedWord, setSelectedWord] = useState<string>('');
   const [isWordDefinitionModalOpen, setIsWordDefinitionModalOpen] = useState(false);
   const [isHintsModalOpen, setIsHintsModalOpen] = useState(false);
   const [isHowToPlayModalOpen, setIsHowToPlayModalOpen] = useState(false);
 
-  const initialGameState = getInitialGameState();
-  const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(initialGameState.id);
+  const { puzzle, yesterdaysPuzzle, yesterdaysDate, error: puzzleError, retry: retryPuzzle } = usePuzzle();
+  const { gameState, updateState, loading: stateLoading, error: stateError } = useGameState(puzzle);
 
   useEffect(() => {
     if (stateError) {
@@ -63,20 +59,6 @@ export default function Home() {
     
     return () => clearInterval(interval);
   }, []);
-
-  // Get yesterday's puzzle data
-  useEffect(() => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
-    const puzzle = getPuzzleForDate(yesterday);
-    
-    setYesterdaysPuzzle({
-      ...puzzle,
-      date: yesterday
-    });
-  }, []);
-
 
   const handleLetterClick = useCallback((letter: string) => {
     setCurrentWord(prev => prev + letter);
@@ -189,6 +171,20 @@ export default function Home() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, handleDelete, handleSubmit, handleLetterClick, isSubmitting]);
+
+  if (puzzleError && !gameState) {
+    return (
+      <div className="min-h-screen bg-bg text-ink flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-muted">{puzzleError}</p>
+        <button
+          onClick={retryPuzzle}
+          className="px-5 py-2 rounded-full bg-gold text-gold-ink font-display font-semibold"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (stateLoading || !gameState) {
     return (
@@ -362,7 +358,7 @@ export default function Home() {
         <YesterdaysPuzzleModal
           isOpen={isYesterdaysPuzzleModalOpen}
           onClose={() => setIsYesterdaysPuzzleModalOpen(false)}
-          date={yesterdaysPuzzle.date}
+          date={yesterdaysDate}
           centerLetter={yesterdaysPuzzle.center_letter.toUpperCase()}
           outerLetters={yesterdaysPuzzle.outside_letters.map(l => l.toUpperCase())}
           validWords={yesterdaysPuzzle.valid_words}

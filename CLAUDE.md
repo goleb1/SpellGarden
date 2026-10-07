@@ -21,7 +21,8 @@ SpellGarden is a Next.js 14 word puzzle game inspired by NYT Spelling Bee, built
 
 **Game Logic Flow:**
 - Puzzles are generated and stored in `puzzle_sets.json` with live dates for daily rotation
-- `puzzleManager.ts` handles puzzle selection based on current date
+- `puzzleData.ts` (server-only) picks the puzzle for a date; `/api/puzzle?date=YYYY-MM-DD` returns just that day's puzzle and the previous day's. The full `puzzle_sets.json` must never be imported into client code.
+- `puzzleManager.ts` holds the client-side puzzle types and fetch helper; the `usePuzzle` hook loads today's puzzle using the player's local date
 - `gameLogic.ts` contains word validation, scoring, and game state management
 - Game state is persisted via Firebase for authenticated users or localStorage for guests
 
@@ -47,9 +48,11 @@ src/
 ├── components/           # React components
 ├── lib/
 │   ├── gameLogic.ts      # Word validation, scoring logic
-│   ├── puzzleManager.ts  # Daily puzzle selection
+│   ├── puzzleData.ts     # Server-only daily puzzle selection
+│   ├── puzzleManager.ts  # Client puzzle types + fetch from /api/puzzle
 │   ├── hooks/
 │   │   ├── useAuth.ts    # Firebase auth hook
+│   │   ├── usePuzzle.ts  # Loads today's + yesterday's puzzle from the API
 │   │   └── useGameState.ts # Game state management with Firestore sync
 │   ├── contexts/
 │   │   └── AuthContext.tsx # Firebase auth context
@@ -72,4 +75,4 @@ src/
 
 ### Testing Different Puzzles
 
-Use `setTestPuzzleIndex()` in development to test specific puzzle configurations from the puzzle set.
+In development, open the app with `?puzzle=N` (e.g. `http://localhost:3000/?puzzle=5`) to load the Nth puzzle from the puzzle set instead of today's. This is ignored in production.

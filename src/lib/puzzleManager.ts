@@ -1,6 +1,4 @@
-import puzzleSet from '../../puzzle_sets.json';
-
-interface Puzzle {
+export interface Puzzle {
   id: string;
   live_date: string;
   center_letter: string;
@@ -12,83 +10,40 @@ interface Puzzle {
   valid_words: string[];
 }
 
+export interface DailyPuzzles {
+  today: Puzzle;
+  yesterday: Puzzle;
+}
+
 // Format a Date as a local YYYY-MM-DD string. Deliberately avoids
 // toISOString(), which converts to UTC first and can shift the date
 // by a day for any player not at UTC+0 (e.g. local midnight at UTC+10
 // becomes the previous day once converted to UTC).
-const formatLocalDate = (date: Date): string => {
+export const formatLocalDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
 
-// For development/testing purposes
-let overridePuzzleIndex: number | null = null;
+// Fetch the puzzles for a local YYYY-MM-DD date. The full schedule stays on
+// the server (see puzzleData.ts); the browser only ever receives that day's
+// puzzle and the one before it.
+export const fetchDailyPuzzles = async (formattedDate: string): Promise<DailyPuzzles> => {
+  const params = new URLSearchParams({ date: formattedDate });
 
-export const setTestPuzzleIndex = (index: number) => {
+  // For development/testing purposes: open the app with ?puzzle=N to load
+  // the Nth puzzle in the set instead of today's.
   if (process.env.NODE_ENV === 'development') {
-    overridePuzzleIndex = index;
-    // Clear local storage to prevent conflicts
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('gameState');
-    }
-  }
-};
-
-// Function to get today's puzzle based on live_date
-const getDailyPuzzle = (date: Date): Puzzle => {
-  // If we have an override index for testing, use that instead
-  if (process.env.NODE_ENV === 'development' && overridePuzzleIndex !== null) {
-    return puzzleSet[overridePuzzleIndex];
+    const testIndex = new URLSearchParams(window.location.search).get('puzzle');
+    if (testIndex !== null) params.set('index', testIndex);
   }
 
-  // Format the date as YYYY-MM-DD using local time (see formatLocalDate above)
-  const formattedDate = formatLocalDate(date);
-  
-  // Find the puzzle scheduled for today
-  const todaysPuzzle = puzzleSet.find(puzzle => puzzle.live_date === formattedDate);
-  
-  if (!todaysPuzzle) {
-    // During a schedule gap, preserve what players actually saw by using the
-    // most recent prior puzzle. This also keeps "yesterday's puzzle" from
-    // incorrectly showing today's newly scheduled puzzle.
-    const previousPuzzles = puzzleSet
-      .filter(puzzle => puzzle.live_date < formattedDate)
-      .sort((a, b) => b.live_date.localeCompare(a.live_date));
-
-    if (previousPuzzles.length > 0) {
-      return previousPuzzles[0];
-    }
-
-    // Before the schedule begins, use the first upcoming puzzle.
-    const futurePuzzles = puzzleSet
-      .filter(puzzle => puzzle.live_date > formattedDate)
-      .sort((a, b) => a.live_date.localeCompare(b.live_date));
-
-    if (futurePuzzles.length > 0) {
-      return futurePuzzles[0];
-    }
-
-    return puzzleSet[puzzleSet.length - 1];
+  const response = await fetch(`/api/puzzle?${params}`);
+  if (!response.ok) {
+    throw new Error(`Puzzle request failed with ${response.status}`);
   }
-  
-  return todaysPuzzle;
-};
-
-// Get today's puzzle
-export const getTodaysPuzzle = (): Puzzle => {
-  const today = new Date();
-  // Reset to start of day in user's timezone
-  today.setHours(0, 0, 0, 0);
-  return getDailyPuzzle(today);
-};
-
-// Get puzzle for a specific date
-export const getPuzzleForDate = (date: Date): Puzzle => {
-  // Reset to start of day
-  date.setHours(0, 0, 0, 0);
-  return getDailyPuzzle(date);
+  return response.json();
 };
 
 // Get the next puzzle change time
@@ -97,4 +52,4 @@ export const getNextPuzzleTime = (): Date => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
   return tomorrow;
-}; 
+};
