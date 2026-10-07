@@ -12,6 +12,17 @@ interface Puzzle {
   valid_words: string[];
 }
 
+// Format a Date as a local YYYY-MM-DD string. Deliberately avoids
+// toISOString(), which converts to UTC first and can shift the date
+// by a day for any player not at UTC+0 (e.g. local midnight at UTC+10
+// becomes the previous day once converted to UTC).
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 // For development/testing purposes
 let overridePuzzleIndex: number | null = null;
 
@@ -32,8 +43,8 @@ const getDailyPuzzle = (date: Date): Puzzle => {
     return puzzleSet[overridePuzzleIndex];
   }
 
-  // Format the date as YYYY-MM-DD
-  const formattedDate = date.toISOString().split('T')[0];
+  // Format the date as YYYY-MM-DD using local time (see formatLocalDate above)
+  const formattedDate = formatLocalDate(date);
   
   // Find the puzzle scheduled for today
   const todaysPuzzle = puzzleSet.find(puzzle => puzzle.live_date === formattedDate);

@@ -11,12 +11,6 @@ this list was written, so they're not included below — just the rest of what t
 
 ## Bugs
 
-### Puzzle can roll over a day early for players east of UTC
-- **What:** `getTodaysPuzzle()` in `puzzleManager.ts` calls `date.toISOString().split('T')[0]` on a date that was reset with `setHours(0,0,0,0)` — i.e. *local* midnight. `toISOString()` converts to UTC first, so for anyone at a positive UTC offset (most of Europe, all of Asia/Australia), local midnight can land on the *previous* UTC day. Verified: `new Date('2026-10-07T00:00:00+10:00').toISOString()` → `2026-10-06`. Those players get yesterday's puzzle a day early (and "Yesterday's Puzzle" shows the wrong day too).
-- **Fix:** Build the `YYYY-MM-DD` string from local `getFullYear()/getMonth()/getDate()` instead of `toISOString()`. Same fix applies in `getPuzzleForDate` and anywhere else a local day is turned into a lookup key.
-- **Priority:** High — affects correctness of the daily puzzle for a large share of the player base.
-- **Spotted:** Code review, Oct 2026
-
 ### `npm run populate-words` is broken
 - **What:** The script runs `ts-node src/scripts/populateWordList.ts`, but `src/scripts/` doesn't exist in the repo. CLAUDE.md and `populate-words.js` both still reference it.
 - **Fix:** Either restore the script (check git history / an old branch for it) or update the command + docs to point at wherever puzzle generation actually lives now.
