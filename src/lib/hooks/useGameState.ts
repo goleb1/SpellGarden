@@ -2,26 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { getInitialGameState } from "../gameLogic";
+import { getInitialGameState, type GameState } from "../gameLogic";
 import type { Puzzle } from "../puzzleManager";
 
-interface GameState {
-  foundWords: string[];
-  score: number;
-  lastUpdated: string;
-  centerLetter: string;
-  letters: string[];
-  totalPossibleScore: number;
-  validWords: string[];
-  pangrams: string[];
-  bingoIsPossible: boolean;
-  id: string;
-}
+// What gets saved: the game state plus when it was last touched
+type SavedGameState = GameState & { lastUpdated: string };
 
 export const useGameState = (puzzle: Puzzle | null) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const puzzleId = puzzle?.id;
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<SavedGameState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,14 +36,20 @@ export const useGameState = (puzzle: Puzzle | null) => {
   }, [puzzleId, user]);
 
   useEffect(() => {
-    // Wait for the puzzle to arrive from the server
-    if (!puzzle) return;
+    // Wait for the puzzle to arrive from the server, and for Firebase to tell
+    // us whether someone is signed in. Loading before then treats a signed-in
+    // player as a guest and briefly shows the wrong progress.
+    if (!puzzle || authLoading) return;
+
+    // Set when the player or puzzle changes mid-load, so a slow earlier load
+    // can't overwrite the newer one.
+    let cancelled = false;
 
     const loadState = async () => {
       try {
         // Get the initial game state from puzzle data
         const baseState = getInitialGameState(puzzle);
-        let state = {
+        let state: SavedGameState = {
           ...baseState,
           lastUpdated: new Date().toISOString(),
         };
@@ -62,6 +58,7 @@ export const useGameState = (puzzle: Puzzle | null) => {
           // Load from Firestore for authenticated users
           const progressRef = doc(db, `users/${user.uid}/progress/${puzzleId}`);
           const docSnap = await getDoc(progressRef);
+          if (cancelled) return;
           if (docSnap.exists()) {
             // Merge Firestore data with base state to ensure all required fields
             const firestoreData = docSnap.data();
@@ -105,19 +102,25 @@ export const useGameState = (puzzle: Puzzle | null) => {
           }
           localStorage.setItem(`gameState_${puzzleId}`, JSON.stringify(state));
         }
-        
+
+        if (cancelled) return;
         setGameState(state);
         setError(null);
       } catch (err) {
+        if (cancelled) return;
         console.error("Error loading game state:", err);
         setError("Failed to load game state. Please try again.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadState();
-  }, [user, puzzle, puzzleId, migrateLocalToFirestore]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading, puzzle, puzzleId, migrateLocalToFirestore]);
 
   const updateState = async (newState: Partial<GameState>) => {
     if (!gameState) return;

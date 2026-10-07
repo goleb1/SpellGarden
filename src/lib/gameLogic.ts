@@ -1,6 +1,6 @@
 import type { Puzzle } from './puzzleManager';
 
-interface GameState {
+export interface GameState {
   centerLetter: string;
   letters: string[];
   foundWords: string[];
