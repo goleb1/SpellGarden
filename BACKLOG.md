@@ -98,12 +98,6 @@ This section is the current top priority (owner feedback, Oct 2026).
 - **Priority:** Low — works fine now, just not optimal.
 - **Spotted:** Code review, Oct 2026
 
-### Bingo bonus is promised but not scored
-- **What:** The How to Play screen, README and CLAUDE.md all say a bingo earns +10 points, but `gameLogic.ts` has no bingo scoring at all. Players are told about a bonus they never get.
-- **Fix:** Owner decision needed: either add the bonus (and confirm `total_score` in `puzzle_sets.json` accounts for it), or remove the claim from the app and docs.
-- **Priority:** Low-Medium
-- **Spotted:** Code review, Oct 2026
-
 ---
 
 ## Performance (More involved, investigate first)
