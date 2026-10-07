@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
+import { Flower, PottedPlant } from '@phosphor-icons/react';
 
 // Burst component for achievement animations
 const Burst = ({ color }: { color: string }) => {
@@ -65,14 +66,18 @@ const PangramIndicator = ({
     <AnimatePresence mode="wait">
       <motion.span
         key={`${isFound}-${allPangramsFound}`}
-        className="text-lg inline-block relative"
+        className="inline-flex items-center relative"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ duration: 0.2 }}
       >
-        {allPangramsFound ? '🌺' : isFound ? '🌸' : '🌱'}
-        {justFound && <Burst color="bg-pink-400" />}
+        <Flower
+          size={26}
+          weight={isFound || allPangramsFound ? 'duotone' : 'regular'}
+          className={allPangramsFound ? 'text-gold' : isFound ? 'text-rose' : 'text-muted'}
+        />
+        {justFound && <Burst color="bg-rose" />}
       </motion.span>
     </AnimatePresence>
   </motion.div>
@@ -135,10 +140,10 @@ export default function PuzzleInfo({
     setLastFoundPangrams(foundPangrams);
   }, [hasBingo, foundPangrams, lastBingoState, lastFoundPangrams, pangramCount]);
 
-  // Get appropriate emoji based on progress
-  const getBingoEmoji = () => {
-    if (!bingoIsPossible) return '🌱';
-    return hasBingo ? '🌻' : '🪴';
+  // Get the appropriate icon based on bingo progress
+  const getBingoIconState = () => {
+    if (!bingoIsPossible) return 'none';
+    return hasBingo ? 'found' : 'pending';
   };
 
   // Get appropriate tooltip text based on progress
@@ -193,21 +198,25 @@ export default function PuzzleInfo({
           }}
         >
           <AnimatePresence mode="wait">
-            <motion.span 
-              key={getBingoEmoji()}
-              className="text-lg inline-block relative"
+            <motion.span
+              key={getBingoIconState()}
+              className="inline-flex items-center relative"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {getBingoEmoji()}
-              {showBingoBurst && <Burst color="bg-yellow-400" />}
+              {hasBingo ? (
+                <Flower size={26} weight="duotone" className="text-gold" />
+              ) : (
+                <PottedPlant size={26} weight="duotone" className="text-leaf" />
+              )}
+              {showBingoBurst && <Burst color="bg-gold" />}
             </motion.span>
           </AnimatePresence>
           {showTooltip === 'bingo' && (
             <div 
-              className="fixed transform -translate-x-1/2 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-50"
+              className="fixed transform -translate-x-1/2 whitespace-nowrap bg-surface text-ink border border-ink/15 text-xs px-2 py-1 rounded z-50"
               style={{ 
                 left: `${tooltipPosition.x}px`,
                 top: `${tooltipPosition.y}px`
@@ -237,7 +246,7 @@ export default function PuzzleInfo({
         ))}
         {showTooltip === 'pangram' && (
           <div 
-            className="fixed transform -translate-x-1/2 whitespace-nowrap bg-black/90 text-white/90 text-xs px-2 py-1 rounded z-50"
+            className="fixed transform -translate-x-1/2 whitespace-nowrap bg-surface text-ink border border-ink/15 text-xs px-2 py-1 rounded z-50"
             style={{ 
               left: `${tooltipPosition.x}px`,
               top: `${tooltipPosition.y}px`

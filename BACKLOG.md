@@ -7,39 +7,24 @@ Context: a full codebase + visual review was done Oct 2026 after months away fro
 Two urgent items it found (stale puzzle schedule, dead dictionary API) were already fixed before
 this list was written, so they're not included below — just the rest of what the review turned up.
 
+Bigger, structural garden-theme ideas (a visible growing plant, a petal-shaped letter
+grid, a literal garden-bed found-words view) came out of the same design pass but need
+real sketching before they're ready to be tasks — see `DESIGN_VISION.md` instead of
+here.
+
 ---
 
 ## Visual Polish (make it feel like a professional NYT-style game)
 
-### Harsh pure black/white palette
-- **What:** `bg-black text-white` on `<main>` overrides the light/dark CSS variables already defined in `globals.css` (which are otherwise dead code). Pure `#000`/`#fff` reads as a developer default, not a finished game — especially for something garden-themed.
-- **Fix:** Design a warm, paper-like palette (soft off-white background, deep green ink, muted accent colors) and apply it through the existing CSS variables instead of hardcoded Tailwind black/white.
-- **Priority:** High — single highest-leverage visual change.
-- **Spotted:** Code review, Oct 2026
-
-### No custom typography
-- **What:** No `next/font` setup anywhere; the whole app runs on the Tailwind system font stack.
-- **Fix:** Add one display/serif font for the wordmark, score, and rank name, and a clean sans for UI text, loaded via `next/font`.
-- **Priority:** High — pairs with the palette change for the biggest "polish" jump.
-- **Spotted:** Code review, Oct 2026
-
-### Emoji used as functional UI
-- **What:** The rank chip (💤 Dormant), the pangram/bingo indicators next to the title, and the Sort button (`⏪`/`🔤`/`📶`) all rely on emoji instead of icons. They render inconsistently across platforms and the sort icons aren't guessable — `⏪` for "chronological" doesn't read as anything in particular.
-- **Fix:** Replace with small SVG icons (an icon set is already a dependency — `react-icons` or `lucide-react`). Label the sort button with text ("Newest" / "A–Z" / "Length") instead of relying on the icon alone.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
-### Control button corner-rounding looks like a bug
-- **What:** The leaf-shaped buttons use `rounded-bl-3xl rounded-br-3xl rounded-tr-3xl` (asymmetric rounding meant to suggest a leaf), but in the 2×2 mobile grid the four buttons' rounded corners point in different directions and read as inconsistent/broken rather than intentional.
-- **Fix:** Either commit fully to the leaf shape with one consistent orientation across all four buttons, or simplify to plain pill buttons.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
-
-### Word input looks like a disabled form field
-- **What:** The current-word display is a real `<input readOnly>` styled as a grey pill with placeholder text — it looks like a disabled input, and it's a pointless tab stop.
-- **Fix:** Render the typed letters as large plain text with a blinking cursor (closer to the NYT Spelling Bee treatment) instead of an `<input>`.
-- **Priority:** Medium
-- **Spotted:** Code review, Oct 2026
+Palette, typography, the icon-vs-emoji swap, button shape/hierarchy, and the word
+input were designed, implemented, and shipped (PR #15) — "Botanical Minimal, Dark":
+a near-neutral dark background, the gold-center/purple-petal flower grid, the
+rainbow-by-length "garden of blooms" found words, Space Grotesk (display) + Karla
+(body) via `next/font`, and Phosphor duotone icons replacing every emoji in the app.
+(Display font ended up as Space Grotesk, not the originally-floated Bricolage
+Grotesque — Bricolage's capital Q was nearly indistinguishable from an O on the
+letter tiles, a real legibility problem for a word game.) See `DESIGN_VISION.md`
+for the larger structural ideas layered on top of this later.
 
 ### Desktop two-column layout disappears outside landscape
 - **What:** The found-words sidebar and divider are gated behind `md:landscape:` classes. In an ordinary desktop browser window that happens to be taller than wide, the two-column layout vanishes entirely and the game looks like the mobile layout stretched out.

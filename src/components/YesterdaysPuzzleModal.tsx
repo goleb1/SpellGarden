@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { IoClose, IoArrowBack } from 'react-icons/io5';
+import { X, ArrowLeft } from '@phosphor-icons/react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -143,41 +143,41 @@ export default function YesterdaysPuzzleModal({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-[#1C1C1E] rounded-xl shadow-xl w-[95%] sm:w-[85%] md:w-[75%] lg:w-[800px] min-w-[280px] mx-4 p-6 border border-[#2D5A27] overflow-hidden max-h-[90vh] flex flex-col"
+            className="relative bg-surface rounded-xl shadow-xl w-[95%] sm:w-[85%] md:w-[75%] lg:w-[800px] min-w-[280px] mx-4 p-6 border border-ink/15 overflow-hidden max-h-[90vh] flex flex-col"
           >
             {/* Header — always static */}
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-white">Yesterday&apos;s Puzzle</h2>
-                <p className="text-xs sm:text-sm text-gray-400">{formattedDate}</p>
+                <h2 className="text-lg sm:text-xl font-display font-semibold text-ink">Yesterday&apos;s Puzzle</h2>
+                <p className="text-xs sm:text-sm text-muted">{formattedDate}</p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5 shrink-0"
+                className="p-2 text-muted hover:text-ink transition-colors rounded-full hover:bg-ink/5 shrink-0"
               >
-                <IoClose size={20} />
+                <X size={20} />
               </button>
             </div>
 
             {/* Performance Summary */}
-            <div className="mb-4 p-3 bg-[#142911] rounded-lg border border-[#2D5A27] text-sm">
+            <div className="mb-4 p-3 bg-bg rounded-lg border border-ink/15 text-sm">
               <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-2">
                 <div className="text-center">
-                  <div className="text-gray-400 text-xs mb-0.5">Score</div>
-                  <div className="text-xl font-bold text-white leading-none mb-0.5">{score}</div>
-                  <div className="text-[10px] text-gray-500 leading-none">of {totalPossibleScore}</div>
+                  <div className="text-muted text-xs mb-0.5">Score</div>
+                  <div className="text-xl font-display font-bold text-ink leading-none mb-0.5">{score}</div>
+                  <div className="text-[10px] text-muted leading-none">of {totalPossibleScore}</div>
                 </div>
-                <div className="text-center border-l border-r border-[#2D5A27]/50 px-3">
-                  <div className="text-gray-400 text-xs mb-0.5">Level</div>
+                <div className="text-center border-l border-r border-ink/15 px-3">
+                  <div className="text-muted text-xs mb-0.5">Level</div>
                   <div className="flex items-center justify-center gap-1.5">
-                    <span className="text-lg">{displayLevel.emoji}</span>
-                    <span className="text-white font-medium text-sm leading-none">{displayLevel.name}</span>
+                    <displayLevel.icon size={18} weight="duotone" className="text-leaf" />
+                    <span className="text-ink font-medium text-sm leading-none">{displayLevel.name}</span>
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-gray-400 text-xs mb-0.5">Words</div>
-                  <div className="text-xl font-bold text-white leading-none mb-0.5">{foundWords.length}</div>
-                  <div className="text-[10px] text-gray-500 leading-none">({wordCompletionPercentage}%)</div>
+                  <div className="text-muted text-xs mb-0.5">Words</div>
+                  <div className="text-xl font-display font-bold text-ink leading-none mb-0.5">{foundWords.length}</div>
+                  <div className="text-[10px] text-muted leading-none">({wordCompletionPercentage}%)</div>
                 </div>
               </div>
             </div>
@@ -187,10 +187,10 @@ export default function YesterdaysPuzzleModal({
               {allLetters.map((letter, index) => (
                 <div
                   key={index}
-                  className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-base sm:text-xl font-bold ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-base sm:text-xl font-display font-bold ${
                     index === 0
-                      ? 'bg-amber-300 text-black'
-                      : 'bg-purple-400 text-black'
+                      ? 'bg-gold text-gold-ink'
+                      : 'bg-petal-found text-petal-ink'
                   }`}
                 >
                   {letter}
@@ -211,15 +211,15 @@ export default function YesterdaysPuzzleModal({
                   >
                     <button
                       onClick={handleBack}
-                      className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5 shrink-0"
+                      className="p-1.5 text-muted hover:text-ink transition-colors rounded-full hover:bg-ink/5 shrink-0"
                     >
-                      <IoArrowBack size={18} />
+                      <ArrowLeft size={18} />
                     </button>
-                    <div className={`px-3 py-1 rounded-full uppercase font-semibold text-sm ${getWordStyle(selectedWord, selectedWordIsPangram)}`}>
+                    <div className={`px-3 py-1 rounded-full uppercase font-display font-semibold text-sm ${getWordStyle(selectedWord, selectedWordIsPangram)}`}>
                       {selectedWord.toUpperCase()}
                     </div>
                     {selectedWordIsPangram && (
-                      <span className="text-xs px-2 py-1 bg-rose-500/20 text-rose-300 rounded-full border border-rose-500/30 hidden sm:inline">
+                      <span className="text-xs px-2 py-1 bg-rose/20 text-rose rounded-full border border-rose/30 hidden sm:inline">
                         PANGRAM
                       </span>
                     )}
@@ -244,7 +244,7 @@ export default function YesterdaysPuzzleModal({
                   >
                     {letterGroups.map(([letter, words]) => (
                       <div key={letter}>
-                        <h3 className="text-gray-400 font-medium mb-2 text-sm">{letter}</h3>
+                        <h3 className="text-muted font-medium mb-2 text-sm">{letter}</h3>
                         <div className="flex flex-wrap gap-1.5">
                           {words.map((word) => {
                             const isFound = foundWordsSet.has(word);
@@ -253,10 +253,10 @@ export default function YesterdaysPuzzleModal({
                               <button
                                 key={word}
                                 onClick={() => handleWordClick(word)}
-                                className={`px-2.5 py-1 rounded-full text-white text-sm cursor-pointer hover:opacity-80 transition-opacity ${
+                                className={`px-2.5 py-1 rounded-full text-sm cursor-pointer hover:opacity-80 transition-opacity ${
                                   isPangram
-                                    ? (isFound ? 'bg-gradient-to-r from-rose-500/80 to-pink-500/80 shadow-lg shadow-rose-500/20 font-semibold' : 'bg-[#333333] border border-pink-500')
-                                    : (isFound ? 'bg-[#2D5A27]' : 'bg-[#333333]')
+                                    ? (isFound ? 'bg-gradient-to-r from-gold to-rose text-[#2A1208] shadow-lg shadow-rose/20 font-semibold' : 'bg-surface border border-rose/50 text-muted')
+                                    : (isFound ? 'bg-leaf text-bg' : 'bg-surface text-muted')
                                 }`}
                               >
                                 {word.toUpperCase()}

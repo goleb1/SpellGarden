@@ -9,21 +9,23 @@ interface FoundWordsListProps {
   justify?: 'center' | 'start';
 }
 
+// Found words plant a "garden of blooms" — longer words earn richer blooms, and a
+// pangram (using all 7 letters) is the rarest bloom of all.
 function getWordStyle(word: string, isPangram: boolean): string {
   if (isPangram) {
-    return "bg-gradient-to-r from-rose-500/80 to-pink-500/80 text-white font-semibold shadow-lg shadow-rose-500/20";
+    return "bg-gradient-to-br from-gold to-rose text-[#2A1208] font-bold shadow-lg shadow-rose/20";
   }
   switch (word.length) {
     case 4:
-      return "bg-white/10 text-white/90";
+      return "bg-bloom4 text-bloom4-ink";
     case 5:
-      return "bg-emerald-500/20 text-emerald-100";
+      return "bg-bloom5 text-bloom5-ink font-semibold";
     case 6:
-      return "bg-violet-500/30 text-violet-100";
+      return "bg-bloom6 text-bloom6-ink font-semibold";
     case 7:
-      return "bg-amber-500/30 text-amber-100";
+      return "bg-bloom7 text-bloom7-ink font-semibold";
     default:
-      return "bg-blue-500/30 text-blue-100";
+      return "bg-bloom8 text-bloom8-ink font-semibold";
   }
 }
 

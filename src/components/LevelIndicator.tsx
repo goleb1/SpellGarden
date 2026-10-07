@@ -1,25 +1,40 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo, useEffect, useState } from 'react';
+import {
+  Moon,
+  Leaf,
+  Plant,
+  PottedPlant,
+  FlowerLotus,
+  FlowerTulip,
+  TreeEvergreen,
+  GraduationCap,
+  Globe,
+  type Icon,
+} from '@phosphor-icons/react';
 import LevelProgressModal from './LevelProgressModal';
 
 export interface Level {
   name: string;
-  emoji: string;
+  icon: Icon;
   threshold: number;
 }
 
+// Rank icons, in order of growth. A couple of these (Dormant, Botanist) don't have
+// an obvious literal icon — Moon/GraduationCap were the closest fits, worth
+// revisiting if a better one comes to mind.
 export const LEVELS: Level[] = [
-  { name: 'Dormant', emoji: '💤', threshold: 0 },
-  { name: 'Seedling', emoji: '🌱', threshold: 0.05 },
-  { name: 'Sprout', emoji: '🌿', threshold: 0.15 },
-  { name: 'Budding', emoji: '🪴', threshold: 0.3 },
-  { name: 'Blooming', emoji: '🌸', threshold: 0.4 },
-  { name: 'Flourishing', emoji: '💐', threshold: 0.5 },
-  { name: 'Verdant', emoji: '🌳', threshold: 0.6 },
-  { name: 'Botanist', emoji: '👩‍🌾', threshold: 0.7 },
+  { name: 'Dormant', icon: Moon, threshold: 0 },
+  { name: 'Seedling', icon: Leaf, threshold: 0.05 },
+  { name: 'Sprout', icon: Plant, threshold: 0.15 },
+  { name: 'Budding', icon: PottedPlant, threshold: 0.3 },
+  { name: 'Blooming', icon: FlowerLotus, threshold: 0.4 },
+  { name: 'Flourishing', icon: FlowerTulip, threshold: 0.5 },
+  { name: 'Verdant', icon: TreeEvergreen, threshold: 0.6 },
+  { name: 'Botanist', icon: GraduationCap, threshold: 0.7 },
 ];
 
-export const MOTHER_EARTH = { name: 'Mother Earth', emoji: '🌍' };
+export const MOTHER_EARTH = { name: 'Mother Earth', icon: Globe };
 const BOTANIST_THRESHOLD = LEVELS[LEVELS.length - 1].threshold;
 
 interface LevelIndicatorProps {
@@ -59,7 +74,7 @@ export default function LevelIndicator({ score, totalPossibleScore, foundWordsCo
   const showCountdown = !isMotherEarth && score > BOTANIST_THRESHOLD * totalPossibleScore;
   const wordsLeft = totalWords - foundWordsCount;
 
-  const displayEmoji = isMotherEarth ? MOTHER_EARTH.emoji : currentLevel.emoji;
+  const DisplayIcon = isMotherEarth ? MOTHER_EARTH.icon : currentLevel.icon;
   const displayName = isMotherEarth
     ? MOTHER_EARTH.name
     : showCountdown
@@ -96,10 +111,10 @@ export default function LevelIndicator({ score, totalPossibleScore, foundWordsCo
         className="flex items-center gap-2 w-full cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <motion.div 
-          className={`relative h-8 bg-white/10 rounded-full overflow-hidden px-2 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[300px] lg:min-w-[360px] ${
-            showLevelUpAnimation ? 'ring-2 ring-green-400/50 shadow-lg shadow-green-400/20' : ''
-          } hover:bg-white/20 transition-colors`}
+        <motion.div
+          className={`relative h-8 bg-surface rounded-full overflow-hidden px-2 sm:px-3 flex items-center w-full sm:w-auto sm:min-w-[300px] lg:min-w-[360px] ${
+            showLevelUpAnimation ? 'ring-2 ring-leaf/50 shadow-lg shadow-leaf/20' : ''
+          } hover:bg-surface/70 transition-colors`}
           initial={false}
           animate={showLevelUpAnimation ? {
             scale: [1, 1.05, 1],
@@ -108,7 +123,8 @@ export default function LevelIndicator({ score, totalPossibleScore, foundWordsCo
         >
           <div className="relative z-10 flex items-center gap-2 text-sm font-medium w-full justify-center">
             <motion.span
-              key={displayEmoji}
+              key={isMotherEarth ? 'mother-earth' : currentLevel.name}
+              className="flex items-center"
               initial={{ scale: 1 }}
               animate={showLevelUpAnimation ? {
                 scale: [1, 1.4, 1],
@@ -116,7 +132,7 @@ export default function LevelIndicator({ score, totalPossibleScore, foundWordsCo
               } : {}}
               transition={{ duration: 0.5 }}
             >
-              {displayEmoji}
+              <DisplayIcon size={16} weight="duotone" className="text-leaf" />
             </motion.span>
             <AnimatePresence mode="wait">
               <motion.span
@@ -131,15 +147,15 @@ export default function LevelIndicator({ score, totalPossibleScore, foundWordsCo
               </motion.span>
             </AnimatePresence>
           </div>
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-green-400/30"
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-leaf/15 to-leaf/25"
             initial={{ x: '-100%' }}
             animate={{ x: `${levelProgress * 100 - 100}%` }}
             transition={{ duration: 0.5 }}
           />
           {showLevelUpAnimation && (
             <motion.div
-              className="absolute inset-0 bg-green-400/20"
+              className="absolute inset-0 bg-leaf/20"
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.5, 0] }}
               transition={{ duration: 0.8 }}

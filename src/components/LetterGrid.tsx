@@ -38,19 +38,21 @@ export default function LetterGrid({
   // Increased radius for better spacing on larger screens
   const radius = isMobile ? 88 : 110; // Increased from 82 to 110 for desktop
 
-  // Helper function to determine tile background color
-  const getTileBackground = (letter: string, isCenter: boolean) => {
-    if (!bingoIsPossible) {
-      // When bingo is NOT possible, all tiles start and stay in the darker shade
-      return isCenter ? 'bg-amber-300 hover:bg-amber-400' : 'bg-purple-400 hover:bg-purple-500';
-    }
-    
-    // When bingo IS possible, tiles start light and turn darker when found
-    const isFound = foundStartingLetters.has(letter.toLowerCase());
+  // Center letter = the sun; outer letters = petals. Tiles start soft/idle and
+  // bloom into their full color once a word starting with that letter is found
+  // (tracked for the bingo achievement). When bingo isn't possible for today's
+  // puzzle, every tile just shows its full "found" color from the start.
+  const getTileClasses = (letter: string, isCenter: boolean) => {
+    const isFound = !bingoIsPossible || foundStartingLetters.has(letter.toLowerCase());
+
     if (isCenter) {
-      return isFound ? 'bg-amber-300 hover:bg-amber-400' : 'bg-amber-100 hover:bg-amber-200';
+      return isFound
+        ? 'bg-gold text-gold-ink hover:bg-gold/90'
+        : 'bg-gold-soft text-ink border border-ink/15 hover:bg-gold-soft/80';
     }
-    return isFound ? 'bg-purple-400 hover:bg-purple-500' : 'bg-purple-200 hover:bg-purple-300';
+    return isFound
+      ? 'bg-petal-found text-petal-ink hover:bg-petal-found/90'
+      : 'bg-petal-idle text-ink border border-ink/15 hover:bg-petal-idle/80';
   };
 
   if (isMobile === null) return null;
@@ -60,15 +62,15 @@ export default function LetterGrid({
       {/* Center hexagon */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <motion.button
-          className={`w-[80px] h-[92px] sm:w-[100px] sm:h-[115px] 
+          className={`w-[80px] h-[92px] sm:w-[100px] sm:h-[115px]
                      [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                      cursor-pointer flex items-center justify-center
-                     transition-colors ${getTileBackground(centerLetter, true)}`}
+                     transition-colors ${getTileClasses(centerLetter, true)}`}
           onClick={() => onLetterClick(centerLetter)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <span className="text-2xl sm:text-3xl font-bold text-black">
+          <span className="text-2xl sm:text-3xl font-display font-bold">
             {centerLetter}
           </span>
         </motion.button>
@@ -95,7 +97,7 @@ export default function LetterGrid({
               className={`w-[80px] h-[92px] sm:w-[100px] sm:h-[115px]
                        [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]
                        cursor-pointer flex items-center justify-center
-                       transition-colors ${getTileBackground(letter, false)}`}
+                       transition-colors ${getTileClasses(letter, false)}`}
               onClick={() => onLetterClick(letter)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -103,9 +105,9 @@ export default function LetterGrid({
                 layout: { duration: 0.4, ease: "easeOut" }
               }}
             >
-              <motion.span 
+              <motion.span
                 layout
-                className="text-xl sm:text-2xl font-bold text-black"
+                className="text-xl sm:text-2xl font-display font-bold"
               >
                 {letter}
               </motion.span>
