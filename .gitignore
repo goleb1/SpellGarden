@@ -43,3 +43,6 @@ serviceAccountKey.json
 # IDE
 .idea
 .vscode
+
+# ShipStudio metadata
+.shipstudio/
