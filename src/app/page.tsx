@@ -180,11 +180,13 @@ export default function Home() {
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 wide:max-w-[1400px] wide:grid wide:grid-cols-[1fr_1px_minmax(350px,35%)] wide:gap-x-8">
         {/* Game Board Section */}
         <div className="flex flex-col wide:min-h-0">
+          {/* Wide: equal space above and below the board */}
+          <div className="hidden wide:block flex-1" />
           <WordInput currentWord={currentWord} message={message} />
 
           {/* Letter Grid Container */}
           <div className="flex justify-center items-center">
-            <div className="relative w-[min(400px,85vw)] h-[min(400px,85vw)] wide:w-[min(400px,50vw)] wide:h-[min(400px,50vw)]">
+            <div className="relative w-[min(400px,85vw)] h-[272px] sm:h-[340px] wide:w-[min(400px,50vw)]">
               <LetterGrid
                 centerLetter={gameState.centerLetter}
                 outerLetters={gameState.letters}
@@ -204,13 +206,14 @@ export default function Home() {
             onDelete={handleDelete}
             onSubmit={handleSubmit}
           />
+          <div className="hidden wide:block flex-1" />
         </div>
 
         {/* Vertical Divider */}
         <div className="hidden wide:block w-px bg-ink/15" />
 
         {/* Found Words - under the board when stacked, beside it when wide */}
-        <div className="flex-1 min-h-0 overflow-y-auto mt-4 wide:mt-0 wide:pt-4 wide:h-full">
+        <div className="flex-1 min-h-0 overflow-y-auto mt-6 wide:mt-0 wide:pt-4 wide:h-full">
           <FoundWordsList
             words={getSortedWords()}
             pangrams={gameState.pangrams}

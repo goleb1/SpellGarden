@@ -189,11 +189,11 @@ export default function HowToPlayModal({
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-leaf mt-0.5">•</span>
-                      <span>Found words are color-coded by length: <span className="text-bloom4">moss</span>=4, <span className="text-bloom5">coral</span>=5, <span className="text-bloom6">lilac</span>=6, <span className="text-bloom7">marigold</span>=7, <span className="text-bloom8">rose</span>=8+</span>
+                      <span>Found words get brighter the longer they are: <span className="text-bloom4-ink">soil</span>=4, <span className="text-bloom5-ink">sprout</span>=5, <span className="text-bloom6">leaf</span>=6, <span className="text-bloom7">lilac</span>=7, <span className="text-bloom8">gold</span>=8+</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-leaf mt-0.5">•</span>
-                      <span><span className="text-gold">Gold-to-rose</span> words are pangrams — worth the +10 bonus</span>
+                      <span><span className="text-rose">Pink</span> words are pangrams — worth the +10 bonus</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-leaf mt-0.5">•</span>

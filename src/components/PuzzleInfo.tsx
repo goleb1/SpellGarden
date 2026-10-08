@@ -74,8 +74,8 @@ const PangramIndicator = ({
       >
         <Flower
           size={26}
-          weight={isFound || allPangramsFound ? 'duotone' : 'regular'}
-          className={allPangramsFound ? 'text-gold' : isFound ? 'text-rose' : 'text-muted'}
+          weight={allPangramsFound ? 'fill' : isFound ? 'duotone' : 'regular'}
+          className={isFound ? 'text-rose' : 'text-muted'}
         />
         {justFound && <Burst color="bg-rose" />}
       </motion.span>
@@ -206,12 +206,14 @@ export default function PuzzleInfo({
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {hasBingo ? (
-                <Flower size={26} weight="duotone" className="text-gold" />
-              ) : (
-                <PottedPlant size={26} weight="duotone" className="text-leaf" />
-              )}
-              {showBingoBurst && <Burst color="bg-gold" />}
+              {/* Same plant either way — it just lights up. Flowers are reserved
+                  for pangrams so the two never look alike. */}
+              <PottedPlant
+                size={26}
+                weight={hasBingo ? 'fill' : 'regular'}
+                className={hasBingo ? 'text-leaf' : 'text-muted'}
+              />
+              {showBingoBurst && <Burst color="bg-leaf" />}
             </motion.span>
           </AnimatePresence>
           {showTooltip === 'bingo' && (

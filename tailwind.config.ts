@@ -24,13 +24,17 @@ const config: Config = {
         petal: { idle: "#4E3E62", found: "#B48CE0", ink: "#241433" },
         // Foliage accent used for incidental UI icons (menu, rank badges, button icons).
         leaf: "#8FD19F",
-        rose: { DEFAULT: "#D98FA3", ink: "#3A1420" },
-        // "Garden of blooms" found-words palette — longer words, richer blooms.
-        bloom4: { DEFAULT: "#4A6B3E", ink: "#F0EFE6" },
-        bloom5: { DEFAULT: "#C9875A", ink: "#3A2210" },
-        bloom6: { DEFAULT: "#A47FD1", ink: "#241433" },
-        bloom7: { DEFAULT: "#E6B655", ink: "#3B2704" },
-        bloom8: { DEFAULT: "#D9668C", ink: "#3A1420" },
+        // Pangram pink — shared by the pangram chips and the pangram icons in the header.
+        rose: { DEFAULT: "#F0569A", deep: "#E11D6A", ink: "#FFF4F8" },
+        // "Garden of blooms" found-words palette. One ramp from quiet to vivid so a
+        // longer word always looks better than a shorter one: soil (4) → sprout (5)
+        // → leaf (6) → lilac bloom (7) → golden bloom (8+). Short words are most of
+        // a puzzle (4s and 5s are ~58%), so they stay quiet and the blooms stay rare.
+        bloom4: { DEFAULT: "#2B2721", ink: "#BDB4A4" },
+        bloom5: { DEFAULT: "#24402D", ink: "#A9DDB6" },
+        bloom6: { DEFAULT: "#3F7A52", ink: "#E6F6EA" },
+        bloom7: { DEFAULT: "#B48CE0", ink: "#241433" },
+        bloom8: { DEFAULT: "#E6B45A", ink: "#3B2704" },
       },
       fontFamily: {
         display: ["var(--font-display)", "ui-sans-serif", "sans-serif"],
