@@ -6,7 +6,7 @@ import { WordDefinition, dictionaryService } from '@/lib/dictionaryService';
 
 // Mirrors FoundWordsList.tsx's "garden of blooms" palette — longer words, richer blooms.
 export function getWordStyle(word: string, isPangram: boolean): string {
-  if (isPangram) return 'bg-gradient-to-br from-gold to-rose text-[#2A1208]';
+  if (isPangram) return 'bg-gradient-to-br from-rose to-rose-deep text-rose-ink';
   switch (word.length) {
     case 4: return 'bg-bloom4 text-bloom4-ink';
     case 5: return 'bg-bloom5 text-bloom5-ink';
