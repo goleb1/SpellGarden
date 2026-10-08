@@ -20,8 +20,8 @@ const config: Config = {
         ink: "#F0EFE6",
         muted: "#9CA596",
         // The letter grid is a flower: gold center (sun), purple/lilac petals.
-        gold: { DEFAULT: "#E6B45A", ink: "#3B2704", soft: "#4A3B1D" },
-        petal: { idle: "#352B42", found: "#B48CE0", ink: "#241433" },
+        gold: { DEFAULT: "#E6B45A", ink: "#3B2704", soft: "#695329" },
+        petal: { idle: "#4E3E62", found: "#B48CE0", ink: "#241433" },
         // Foliage accent used for incidental UI icons (menu, rank badges, button icons).
         leaf: "#8FD19F",
         rose: { DEFAULT: "#D98FA3", ink: "#3A1420" },

@@ -48,11 +48,11 @@ export default function LetterGrid({
     if (isCenter) {
       return isFound
         ? 'bg-gold text-gold-ink hover:bg-gold/90'
-        : 'bg-gold-soft text-ink border border-ink/15 hover:bg-gold-soft/80';
+        : 'bg-gold-soft text-ink hover:bg-gold-soft/80';
     }
     return isFound
       ? 'bg-petal-found text-petal-ink hover:bg-petal-found/90'
-      : 'bg-petal-idle text-ink border border-ink/15 hover:bg-petal-idle/80';
+      : 'bg-petal-idle text-ink hover:bg-petal-idle/80';
   };
 
   if (isMobile === null) return null;
