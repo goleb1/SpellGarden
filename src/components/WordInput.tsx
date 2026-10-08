@@ -12,8 +12,8 @@ interface WordInputProps {
 
 export default function WordInput({ currentWord, message }: WordInputProps) {
   return (
-    <div className="relative mb-2 sm:mb-4 flex justify-center">
-      {/* Absolutely positioned message */}
+    <div className="relative mt-8 sm:mt-4 mb-2 sm:mb-4 flex justify-center">
+      {/* Absolutely positioned message - the top margin keeps it clear of the header */}
       <div className="absolute left-0 right-0 bottom-full mb-1 sm:mb-2">
         <AnimatePresence>
           {message && (
