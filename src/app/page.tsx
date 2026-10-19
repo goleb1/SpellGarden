@@ -179,8 +179,8 @@ export default function Home() {
       {/* Game Container */}
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 wide:max-w-[1400px] wide:grid wide:grid-cols-[1fr_1px_minmax(350px,35%)] wide:gap-x-8">
         {/* Game Board Section */}
-        <div className="flex flex-col wide:min-h-0">
-          {/* Wide: equal space above and below the board */}
+        <div className="game-board-column flex flex-col wide:min-h-0 wide:pb-20">
+          {/* Wide: center the letters in the screen, not the taller word-to-controls group. */}
           <div className="hidden wide:block flex-1" />
           <WordInput currentWord={currentWord} message={message} />
 
