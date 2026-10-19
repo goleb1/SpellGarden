@@ -31,8 +31,8 @@ export default function GameSkeleton() {
 
       {/* Game Container */}
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0 wide:max-w-[1400px] wide:grid wide:grid-cols-[1fr_1px_minmax(350px,35%)] wide:gap-x-8">
-        <div className="flex flex-col wide:min-h-0 pointer-events-none" aria-hidden="true">
-          {/* Wide: equal space above and below the board */}
+        <div className="game-board-column flex flex-col wide:min-h-0 wide:pb-20 pointer-events-none" aria-hidden="true">
+          {/* Match the real board's letter-centered position. */}
           <div className="hidden wide:block flex-1" />
           <WordInput currentWord="" />
 

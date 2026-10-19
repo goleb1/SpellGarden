@@ -27,6 +27,13 @@ body {
   touch-action: pan-y;
 }
 
+/* On short landscape screens, keep the score message clear of the header. */
+@media (max-height: 700px) {
+  main .game-board-column {
+    padding-bottom: 0;
+  }
+}
+
 /* Prevent all text selection and touch highlights globally */
 *, *::before, *::after {
   -webkit-tap-highlight-color: transparent;
